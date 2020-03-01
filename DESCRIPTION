@@ -9,6 +9,7 @@ Authors@R:
            comment = c(ORCID = "0000-0001-7087-9776"))
 Description: Periodically tweets out photos that are found in a directory. It 
     extracts the EXIF metadata creating descriptions based on that.
+URL: https://github.com/jonkeane/phototweetr
 License: Apache License (>= 2.0)
 Encoding: UTF-8
 LazyData: true

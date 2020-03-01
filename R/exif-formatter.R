@@ -14,11 +14,9 @@ format_exif <- function(exif_data) {
 twitter_max <- 280
 
 text <- function(exif_data) {
+    # Title, Description
     return(paste(exif_data$Title, exif_data$Description, sep = " • "))
 }
-# Title, Description
-
-
 
 exposure <- function(exif_data) {
     # shutter, aperture, iso, focal length
@@ -40,3 +38,6 @@ tags <- function(exif_data) {
     tags <- gsub(" ", "", exif_data$Keywords[[1]])
     return(paste(paste0("#", tags), collapse = " "))
 }
+
+# for geo info:
+# https://developer.twitter.com/en/docs/tweets/post-and-engage/api-reference/post-statuses-update
