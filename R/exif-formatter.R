@@ -1,8 +1,16 @@
+#' Format EXIF for tweet
+#'
+#' Takes the exif data (from `exifr::read_exif()`) and formats it into a tweet.
+#'
+#' @param exif_data EXIF data from `exifr::read_exif()`
+#'
+#' @return text for a tweet
+#' @export
 format_exif <- function(exif_data) {
     text <- c(
         text(exif_data),
-        paste0("\U0001f4f8", exposure(exif_data)),
-        paste0("\U0001f4f7", camera(exif_data)),
+        paste0("\U1f4f8", exposure(exif_data)),
+        paste0("\U1f4f7", camera(exif_data)),
         tags(exif_data)
     )
 
@@ -15,7 +23,7 @@ twitter_max <- 280
 
 text <- function(exif_data) {
     # Title, Description
-    return(paste(exif_data$Title, exif_data$Description, sep = " • "))
+    return(paste(exif_data$Title, exif_data$Description, sep = " \u2022 "))
 }
 
 exposure <- function(exif_data) {
@@ -25,7 +33,7 @@ exposure <- function(exif_data) {
     iso <- paste0(exif_data$ISO, "iso")
     focal_length <- paste0(exif_data$FocalLength, "mm")
 
-    return(paste(focal_length, paste(shutter, aperture, iso), sep = " • "))
+    return(paste(focal_length, paste(shutter, aperture, iso), sep = " \u2022 "))
 }
 
 camera <- function(exif_data) {
