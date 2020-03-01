@@ -20,5 +20,6 @@ Imports:
     glue,
     MASS
 Suggests: 
-    testthat (>= 2.1.0)
+    testthat (>= 2.1.0),
+    covr
 RoxygenNote: 7.0.2
