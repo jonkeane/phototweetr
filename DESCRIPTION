@@ -18,7 +18,9 @@ Imports:
     exifr,
     rtweet,
     glue,
-    MASS
+    MASS,
+    RSQLite,
+    DBI
 Suggests: 
     testthat (>= 2.1.0),
     covr

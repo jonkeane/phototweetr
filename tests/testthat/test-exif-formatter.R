@@ -11,6 +11,5 @@ test_that("formatting", {
       "USM\n#Fuji-san #Hakone #Japan #MountFuji #Mountain #富士山 #日本 ",
       "#箱根"
     )
-
   )
 })
