@@ -1,0 +1,22 @@
+Package: phototweetr
+Title: A simple twitter bot that tweets photos
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Jonathan",
+           family = "Keane",
+           role = c("aut", "cre"),
+           email = "jkeane@gmail.com",
+           comment = c(ORCID = "0000-0001-7087-9776"))
+Description: Periodically tweets out photos that are found in a directory. It 
+    extracts the EXIF metadata creating descriptions based on that.
+License: Apache License (>= 2.0)
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+Imports: 
+    exifr,
+    rtweet,
+    glue,
+    MASS
+Suggests: 
+    testthat (>= 2.1.0)
