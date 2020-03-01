@@ -16,16 +16,19 @@ schema <- data.frame(
   orig_file = character(0),
   tweet_file = character(0),
   tweet_text = character(0),
-  date = character(0),
+  date_added = character(0),
+  date_tweeted = character(0),
   tweeted = integer(0)
 )
 
 add_row_statement <- function(df, con) {
   glue::glue_sql(
-    paste0(
-      "INSERT INTO tweets (orig_file, tweet_file, tweet_text, date, tweeted)",
-      "VALUES({orig_file}, {tweet_file}, {tweet_text}, {date}, {tweeted});"
-    ),
+    "INSERT INTO tweets (",
+    glue::glue_collapse(glue::glue("{colnames(df)}"), sep = ', '),
+    ")",
+    "VALUES(",
+    glue::glue_collapse(glue::glue("{{{colnames(df)}}}"), sep = ', '),
+    ");",
     .con = con,
     .envir = df
   )
