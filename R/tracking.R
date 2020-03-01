@@ -12,7 +12,6 @@ connect <- function(db_path, clean = FALSE) {
 }
 
 schema <- data.frame(
-  id = integer(0),
   orig_file = character(0),
   tweet_file = character(0),
   tweet_text = character(0),
@@ -32,4 +31,28 @@ add_row_statement <- function(df, con) {
     .con = con,
     .envir = df
   )
+}
+
+queue <- function(photo, con, orig_dir = "orig", proc_dir = "processed") {
+  # extract exif
+  exif_data <- exifr::read_exif(photo)
+
+  # move file to orig, processed and clean
+  orig <- file.path(orig_dir, basename(photo))
+  proced <- file.path(proc_dir, basename(photo))
+  file.copy(photo, orig)
+  file.copy(photo, proced)
+  sanitize_exif(proced, exif_data)
+  file.remove(photo)
+
+  # add to DB
+  df <- data.frame(
+    orig_file = orig,
+    tweet_file = proced,
+    tweet_text = format_exif(exif_data),
+    date_added = Sys.time(),
+    tweeted = FALSE
+  )
+  statement <- add_row_statement(df, con)
+  return(DBI::dbExecute(con, statement))
 }
