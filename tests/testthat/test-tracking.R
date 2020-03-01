@@ -24,6 +24,7 @@ test_that("add_row_statement works", {
 })
 
 test_that("Queueing", {
+  # setup
   dir.create(test_path("orig"))
   dir.create(test_path("processed"))
   file.copy(test_path("IMG_4907.jpg"), test_path("copy.jpg"))
@@ -39,6 +40,7 @@ test_that("Queueing", {
   expect_true(grepl("Fuji from Hakone II", data_out$tweet_text))
   expect_identical(data_out$tweeted, 0L)
 
+  # teardown
   unlink(
     c(test_path("orig"), test_path("processed"),test_path("copy.jpg")),
     recursive = TRUE

@@ -17,7 +17,7 @@ schema <- data.frame(
   tweet_text = character(0),
   date_added = character(0),
   date_tweeted = character(0),
-  tweeted = integer(0),
+  tweeted = logical(0),
   # these will be null for now, but might be useful
   store_url = character(0),
   direct_url = character(0),
