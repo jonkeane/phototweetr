@@ -25,7 +25,9 @@ schema <- data.frame(
   date_added = character(0),
   date_tweeted = character(0),
   tweeted = integer(0),
+  tweet_error = character(0),
   # these will be null for now, but might be useful
+  tweet_geo = character(0),
   store_url = character(0),
   direct_url = character(0),
   flickr_url = character(0)
@@ -74,4 +76,9 @@ process_one <- function(photo, orig_dir, proc_dir) {
 
 process_many <- function(photo, orig_dir, proc_dir) {
   return(do.call(rbind, lapply(photo, process_one, orig_dir = orig_dir, proc_dir = proc_dir)))
+}
+
+update_one <- function(df, con) {
+  DBI::dbExecute(con, glue_sql("DELETE FROM tweets WHERE rowid = {df$rowid};"))
+  DBI::dbAppendTable(con, "tweets", df)
 }

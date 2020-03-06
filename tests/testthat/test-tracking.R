@@ -41,4 +41,15 @@ test_that("Queueing and processing", {
   )
 })
 
+test_that("Update", {
+  data <- DBI::dbGetQuery(con, "SELECT rowid, * FROM tweets LIMIT 1")
+  expect_identical(data$tweeted, 0L)
+
+  data$tweeted <- 1L
+  expect_silent(update_one(data, con))
+  data <- DBI::dbGetQuery(con, "SELECT rowid, * FROM tweets LIMIT 1")
+  expect_identical(data$tweeted, 1L)
+
+})
+
 DBI::dbDisconnect(con)
