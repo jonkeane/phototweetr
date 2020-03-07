@@ -1,4 +1,5 @@
 test_that("tweet_photo works", {
+  skip_if(Sys.info()['sysname'] == "Windows", "Windows and rtweet testing aren't friends")
   with_mock_api({
     auth_rtweet()
 
