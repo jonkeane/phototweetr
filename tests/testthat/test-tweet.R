@@ -1,5 +1,7 @@
 test_that("tweet_photo works", {
   with_mock_api({
+    auth_rtweet()
+
     photo_df <- data.frame(
       orig_file = test_path("IMG_4907.jpg"),
       tweet_file = test_path("IMG_4907.jpg"),
