@@ -32,15 +32,16 @@ tweet_photo <- function(photo_df, ...) {
 #' * `rtweet_api_secret_key`
 #' * `rtweet_access_token`
 #' * `rtweet_access_token_secret`
+#' ... arguments passed to `rtweet::create_token()`
 #'
 #' @export
-auth_rtweet <- function() {
+auth_rtweet <- function(...) {
   return(rtweet::create_token(
     app = "phototweetr",
     consumer_key = Sys.getenv("rtweet_api_key"),
     consumer_secret = Sys.getenv("rtweet_api_secret_key"),
     access_token = Sys.getenv("rtweet_access_token"),
     access_secret = Sys.getenv("rtweet_access_token_secret"),
-    set_renv = FALSE
+    ...
   ))
 }

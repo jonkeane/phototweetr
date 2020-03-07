@@ -54,7 +54,7 @@ photo_to_tweet <- to_tweet[sample(nrow(to_tweet),1),]
 message(glue("Found one: {photo_to_tweet$orig_file}"))
 
 message("Authenticating with Twitter")
-token <- auth_rtweet()
+token <- auth_rtweet(set_renv = FALSE)
 
 message(glue("Tweeting out photo {photo_to_tweet$orig_file}"))
 photo_to_tweet <- tweet_photo(photo_to_tweet, token = token)
