@@ -1,5 +1,5 @@
 library("phototweetr")
-library(glue)
+library("glue")
 
 # Must have setup:
 # Dirs:
@@ -21,13 +21,13 @@ on.exit(DBI::dbDisconnect(con))
 
 ### process any triage photos
 message("Queuing any photos in triage")
-triage_photos <- list.files("triage", pattern = "(jpg|png|jpeg)$")
+triage_photos <- file.path("triage", list.files("triage", pattern = "(jpg|png|jpeg)$"))
 db_response <- queue(triage_photos, con = con)
 
 ### determine if it's time to tweet
 last_tweeted <- DBI::dbGetQuery(con, "SELECT date_tweeted FROM tweets;")
 
-if (nrow(last_tweeted) < 1) {
+if (nrow(last_tweeted) < 1 || all(is.na(last_tweeted$date_tweeted))) {
   message("There are no tweets, please tweet manually. Goodbye.")
   quit("no")
 }
@@ -44,21 +44,21 @@ if (!wait_and_window(last_tweeted)) {
 
 ### pick a photo and tweet
 message("Finding a photo to tweet")
-to_tweet <- DBI::dbGetQuery(con, "SELECT * FROM tweets WHERE tweeted != 0;")
+to_tweet <- DBI::dbGetQuery(con, "SELECT * FROM tweets WHERE tweeted == 0;")
 if (nrow(to_tweet) == 0) {
   message("There are no more tweets queued. Goodbye.")
   quit("no")
 }
 
-photo_to_tweet <- df[sample(nrow(df),1),]
+photo_to_tweet <- to_tweet[sample(nrow(to_tweet),1),]
 message(glue("Found one: {photo_to_tweet$orig_file}"))
 
 message("Authenticating with Twitter")
-auth_rtweet()
+token <- auth_rtweet()
 
-messgage(glue("Tweeting out photo {photo_to_tweet$orig_file}"))
-photo_df <- tweet_photo(photo_df)
-update_one(photo_df, con)
+message(glue("Tweeting out photo {photo_to_tweet$orig_file}"))
+photo_to_tweet <- tweet_photo(photo_to_tweet, token = token)
+update_one(photo_to_tweet, con)
 
 ### goodbye
 message("A photo has been tweeted and updated. Goodbye.")

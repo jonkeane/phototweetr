@@ -23,6 +23,7 @@ twitter_max <- 280
 
 text <- function(exif_data) {
   # Title, Description
+  # TODO: what if there is no Title or no Descrition?
   return(paste(exif_data$Title, exif_data$Description, sep = " \u2022 "))
 }
 

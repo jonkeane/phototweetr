@@ -2,3 +2,6 @@
 ^\.Rproj\.user$
 ^LICENSE\.md$
 ^\.github/workflows/R-CMD-check\.yaml$
+^inst/orig
+^inst/triage
+^inst/processed

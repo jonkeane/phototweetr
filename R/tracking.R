@@ -85,6 +85,12 @@ process_one <- function(photo, orig_dir, proc_dir) {
   ))
 }
 
+#' Update a photo in the tracking db
+#'
+#' @param df dataframe with updated photo information (with a single row)
+#' @param con a sqlite connection
+#'
+#' @export
 update_one <- function(df, con) {
   DBI::dbExecute(con, glue_sql("DELETE FROM tweets WHERE rowid = {df$rowid};"))
   DBI::dbAppendTable(con, "tweets", df)
