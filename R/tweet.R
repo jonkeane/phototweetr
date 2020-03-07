@@ -40,6 +40,7 @@ auth_rtweet <- function() {
     consumer_key = Sys.getenv("rtweet_api_key"),
     consumer_secret = Sys.getenv("rtweet_api_secret_key"),
     access_token = Sys.getenv("rtweet_access_token"),
-    access_secret = Sys.getenv("rtweet_access_token_secret")
+    access_secret = Sys.getenv("rtweet_access_token_secret"),
+    set_renv = FALSE
   ))
 }
