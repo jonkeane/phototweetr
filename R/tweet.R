@@ -1,4 +1,4 @@
-tweet_photo <- function(photo_df, con) {
+tweet_photo <- function(photo_df) {
   message(glue("Attempting to tweet photo {photo_df$tweet_file}"))
   tweet <- rtweet::post_tweet(
     status = photo_df$tweet_text,
@@ -12,7 +12,7 @@ tweet_photo <- function(photo_df, con) {
     photo_df$tweet_error <- httr::content(tweet)
   }
 
-  return(update_one(photo_df, con))
+  return(photo_df)
 }
 
 auth_rtweet <- function() {
