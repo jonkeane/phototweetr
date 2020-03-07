@@ -21,11 +21,12 @@ queue(triage_photos, con = con)
 last_tweeted <- DBI::dbGetQuery(con, "SELECT date_tweeted FROM tweets;")
 last_tweeted <- max(as.POSIXct(last_tweeted$date_tweeted))
 
-tweet_interval <- 60 * 60 * 24 * 7 # one week
 if (is.na(last_tweeted)) {
   quit("There are no tweets, please tweet manually. Goodbye.")
-} else if (last_tweeted < Sys.time() - tweet_interval) {
+} else if (!wait_and_window(last_tweeted)) {
   quit("It's not yet time to tweet again. Goodbye.")
+} else if (!weighted_coin()) {
+  quit("The weighted coin says this hour is not our hour. Goodbye.")
 }
 
 ### pick a photo and tweet

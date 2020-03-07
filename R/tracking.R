@@ -8,10 +8,11 @@
 connect <- function(db_path, clean = FALSE) {
   if (clean) {
     unlink(db_path)
+  }
+
+  if(!file.exists(db_path)) {
     con <- DBI::dbConnect(RSQLite::SQLite(), db_path)
-
     DBI::dbWriteTable(con, "tweets", schema)
-
     return(con)
   }
 

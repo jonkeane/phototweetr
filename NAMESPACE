@@ -3,6 +3,7 @@
 export(connect)
 export(format_exif)
 export(queue)
+export(wait_and_window)
 importFrom(glue,glue)
 importFrom(glue,glue_collapse)
 importFrom(glue,glue_sql)
