@@ -8,9 +8,10 @@ library(glue)
 #   * processed - photos that have had their metadata cleaned for twitter
 
 message(glue(
+  "",
   "######################################################",
   "Starting phototweeter at {Sys.time()}",
-  "######################################################\n",
+  "######################################################",
   .sep = "\n"
   ))
 
@@ -21,25 +22,32 @@ on.exit(DBI::dbDisconnect(con))
 ### process any triage photos
 message("Queuing any photos in triage")
 triage_photos <- list.files("triage", pattern = "(jpg|png|jpeg)$")
-queue(triage_photos, con = con)
+db_response <- queue(triage_photos, con = con)
 
 ### determine if it's time to tweet
 last_tweeted <- DBI::dbGetQuery(con, "SELECT date_tweeted FROM tweets;")
-last_tweeted <- max(as.POSIXct(last_tweeted$date_tweeted))
 
-if (is.na(last_tweeted)) {
-  quit("There are no tweets, please tweet manually. Goodbye.")
-} else if (!wait_and_window(last_tweeted)) {
-  quit("It's not yet time to tweet again. Goodbye.")
+if (nrow(last_tweeted) < 1) {
+  message("There are no tweets, please tweet manually. Goodbye.")
+  quit("no")
+}
+
+last_tweeted <- max(as.POSIXct(last_tweeted$date_tweeted), na.rm = TRUE)
+
+if (!wait_and_window(last_tweeted)) {
+  message("It's not yet time to tweet again. Goodbye.")
+  quit("no")
 } else if (!weighted_coin()) {
-  quit("The weighted coin says this hour is not our hour. Goodbye.")
+  message("The weighted coin says this hour is not our hour. Goodbye.")
+  quit("no")
 }
 
 ### pick a photo and tweet
 message("Finding a photo to tweet")
 to_tweet <- DBI::dbGetQuery(con, "SELECT * FROM tweets WHERE tweeted != 0;")
 if (nrow(to_tweet) == 0) {
-  quit("There are no more tweets queued. Goodbye.")
+  message("There are no more tweets queued. Goodbye.")
+  quit("no")
 }
 
 photo_to_tweet <- df[sample(nrow(df),1),]
@@ -53,4 +61,5 @@ photo_df <- tweet_photo(photo_df)
 update_one(photo_df, con)
 
 ### goodbye
-quit("A photo has been tweeted and updated. Goodbye.")
+message("A photo has been tweeted and updated. Goodbye.")
+quit("no")
