@@ -4,7 +4,10 @@
 \alias{auth_rtweet}
 \title{Ensure that \code{rtweet} is authenticated}
 \usage{
-auth_rtweet()
+auth_rtweet(...)
+}
+\arguments{
+\item{...}{arguments passed to \code{rtweet::create_token()}}
 }
 \description{
 This will call \code{rtweet::create_token()}. If a token is being created, the
