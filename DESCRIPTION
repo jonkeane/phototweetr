@@ -21,9 +21,9 @@ Imports:
     MASS,
     RSQLite,
     DBI,
-    httr,
-    httptest
+    httr
 Suggests: 
     testthat (>= 2.1.0),
+    httptest,
     covr
 RoxygenNote: 7.0.2
