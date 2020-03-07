@@ -1,6 +1,12 @@
 library("phototweetr")
 library(glue)
 
+# Must have setup:
+# Dirs:
+#   * triage - photos that haven't been processed
+#   * orig - originals that have been processed
+#   * processed - photos that have had their metadata cleaned for twitter
+
 message(glue(
   "######################################################",
   "Starting phototweeter at {Sys.time()}",

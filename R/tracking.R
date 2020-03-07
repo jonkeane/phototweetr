@@ -49,6 +49,8 @@ schema <- data.frame(
 queue <- function(photo, con, orig_dir = "orig", proc_dir = "processed") {
   df <- process_many(photo, orig_dir = orig_dir, proc_dir = proc_dir)
 
+  # TODO: what to do if the photo is already there?
+
   # add to DB
   return(DBI::dbWriteTable(con, "tweets", df, append = TRUE))
 }
