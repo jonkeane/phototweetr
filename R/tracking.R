@@ -52,6 +52,10 @@ queue <- function(photo, con, orig_dir = "orig", proc_dir = "processed") {
   return(DBI::dbWriteTable(con, "tweets", df, append = TRUE))
 }
 
+process_many <- function(photo, orig_dir, proc_dir) {
+  return(do.call(rbind, lapply(photo, process_one, orig_dir = orig_dir, proc_dir = proc_dir)))
+}
+
 process_one <- function(photo, orig_dir, proc_dir) {
   # extract exif
   exif_data <- exifr::read_exif(photo)
@@ -72,10 +76,6 @@ process_one <- function(photo, orig_dir, proc_dir) {
     tweeted = FALSE,
     stringsAsFactors = FALSE
   ))
-}
-
-process_many <- function(photo, orig_dir, proc_dir) {
-  return(do.call(rbind, lapply(photo, process_one, orig_dir = orig_dir, proc_dir = proc_dir)))
 }
 
 update_one <- function(df, con) {

@@ -21,7 +21,8 @@ Imports:
     MASS,
     RSQLite,
     DBI,
-    httr
+    httr,
+    httptest
 Suggests: 
     testthat (>= 2.1.0),
     covr
