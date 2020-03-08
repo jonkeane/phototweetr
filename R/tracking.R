@@ -1,7 +1,7 @@
 #' Connect to the sqlite tracking DB
 #'
 #' @param db_path path to the db
-#' @param clean logical, should the db be unlinked and re-initialized
+#' @param clean logical, should the db be unlinked and reinitialized
 #'
 #' @return connection
 #' @export
@@ -40,12 +40,12 @@ schema <- data.frame(
 #' actually tweet them out (yet)
 #'
 #' @param photo path to the photo
-#' @param con the databse to use
+#' @param con the database to use
 #' @param proc_dir directory to place the processed files
 #'
 #' @return `TRUE` silently, if successful
 #' @export
-queue <- function(photo, con, orig_dir = "orig", proc_dir = "processed") {
+queue <- function(photo, con, proc_dir = "processed") {
   df <- process_many(photo, proc_dir = proc_dir)
 
   if (is.null(df)) {
@@ -58,7 +58,7 @@ queue <- function(photo, con, orig_dir = "orig", proc_dir = "processed") {
   return(DBI::dbWriteTable(con, "tweets", df, append = TRUE))
 }
 
-process_many <- function(photo, orig_dir, proc_dir) {
+process_many <- function(photo, proc_dir) {
   return(do.call(rbind, lapply(photo, process_one, proc_dir = proc_dir)))
 }
 

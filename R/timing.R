@@ -1,8 +1,8 @@
 #' Wait and window
 #'
-#' Compare a time from the past (`then`) to the current time (`now`, deafult:
+#' Compare a time from the past (`then`) to the current time (`now`, default:
 #' `Sys.time()`) and see if `wait` seconds (default: 1 week) has passed.
-#' Additionaly, only return `TRUE` if the current time is between the hours
+#' additionally, only return `TRUE` if the current time is between the hours
 #' given in `window` (if `window` is null, then always return)
 #'
 #' @param then a previous time (`POSIXct`)

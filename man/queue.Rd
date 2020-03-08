@@ -4,12 +4,12 @@
 \alias{queue}
 \title{Queue photos for tweeting}
 \usage{
-queue(photo, con, orig_dir = "orig", proc_dir = "processed")
+queue(photo, con, proc_dir = "processed")
 }
 \arguments{
 \item{photo}{path to the photo}
 
-\item{con}{the databse to use}
+\item{con}{the database to use}
 
 \item{proc_dir}{directory to place the processed files}
 }

@@ -9,7 +9,7 @@ connect(db_path, clean = FALSE)
 \arguments{
 \item{db_path}{path to the db}
 
-\item{clean}{logical, should the db be unlinked and re-initialized}
+\item{clean}{logical, should the db be unlinked and reinitialized}
 }
 \value{
 connection

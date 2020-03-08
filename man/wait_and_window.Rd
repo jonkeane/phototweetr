@@ -19,8 +19,8 @@ wait_and_window(then, now = Sys.time(), wait = one_week, window = c(8, 22))
 logical
 }
 \description{
-Compare a time from the past (\code{then}) to the current time (\code{now}, deafult:
+Compare a time from the past (\code{then}) to the current time (\code{now}, default:
 \code{Sys.time()}) and see if \code{wait} seconds (default: 1 week) has passed.
-Additionaly, only return \code{TRUE} if the current time is between the hours
+additionally, only return \code{TRUE} if the current time is between the hours
 given in \code{window} (if \code{window} is null, then always return)
 }

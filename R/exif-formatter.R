@@ -1,6 +1,6 @@
 #' Format EXIF for tweet
 #'
-#' Takes the exif data (from `exifr::read_exif()`) and formats it into a tweet.
+#' Takes the EXIF data (from `exifr::read_exif()`) and formats it into a tweet.
 #'
 #' @param exif_data EXIF data from `exifr::read_exif()`
 #'

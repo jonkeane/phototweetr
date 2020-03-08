@@ -13,5 +13,5 @@ format_exif(exif_data)
 text for a tweet
 }
 \description{
-Takes the exif data (from \code{exifr::read_exif()}) and formats it into a tweet.
+Takes the EXIF data (from \code{exifr::read_exif()}) and formats it into a tweet.
 }
