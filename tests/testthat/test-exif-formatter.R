@@ -2,7 +2,7 @@ exif_data <- exifr::read_exif(test_path("orig", "IMG_4907.jpg"))
 
 test_that("formatting", {
   skip_if(Sys.info()['sysname'] == "Windows", "Unicode on windows \U1F643")
-  expect_identical(
+  expect_equal(
     format_exif(exif_data),
     paste0(
       "Fuji from Hakone II • A photo of mount Fuji. Snow covers the top ",
@@ -11,5 +11,24 @@ test_that("formatting", {
       "USM\n#Fuji-san #Hakone #Japan #MountFuji #Mountain #富士山 #日本 ",
       "#箱根"
     )
+  )
+})
+
+test_that("", {
+  exif_data <- data.frame(
+    Title = "Title",
+    Description = "Description",
+    stringsAsFactors = FALSE
+  )
+
+  expect_equal(
+    text(exif_data),
+    "Title \u2022 Description"
+  )
+
+  exif_data$Title <- NULL
+  expect_equal(
+    text(exif_data),
+    "Description"
   )
 })

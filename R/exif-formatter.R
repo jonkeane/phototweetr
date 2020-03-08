@@ -16,15 +16,14 @@ format_exif <- function(exif_data) {
 
   # TODO: What to do if over twitter_max?
 
-  return(paste(text, collapse = "\n"))
+  return(glue::glue_collapse(text, sep = "\n"))
 }
 
 twitter_max <- 280
 
 text <- function(exif_data) {
   # Title, Description
-  # TODO: what if there is no Title or no Descrpition?
-  return(paste(exif_data$Title, exif_data$Description, sep = " \u2022 "))
+  return(glue_collapse(c(exif_data$Title, exif_data$Description), sep = " \u2022 "))
 }
 
 exposure <- function(exif_data) {
@@ -34,7 +33,7 @@ exposure <- function(exif_data) {
   iso <- paste0(exif_data$ISO, "iso")
   focal_length <- paste0(exif_data$FocalLength, "mm")
 
-  return(paste(focal_length, paste(shutter, aperture, iso), sep = " \u2022 "))
+  return(glue_collapse(c(focal_length, paste(shutter, aperture, iso)), sep = " \u2022 "))
 }
 
 camera <- function(exif_data) {
@@ -45,7 +44,7 @@ camera <- function(exif_data) {
 tags <- function(exif_data) {
   # what about subject?
   tags <- gsub(" ", "", exif_data$Keywords[[1]])
-  return(paste(paste0("#", tags), collapse = " "))
+  return(glue_collapse(paste0("#", tags), sep = " "))
 }
 
 # for geo info:
