@@ -7,6 +7,10 @@
 #' @return text for a tweet
 #' @export
 format_exif <- function(exif_data) {
+  # convert to a data.frame to avoid tibble's unknown or uninitialized columns
+  # warnings
+  exif_data <- as.data.frame(exif_data)
+
   text <- c(
     text(exif_data),
     paste0("\U1f4f8", exposure(exif_data)),
