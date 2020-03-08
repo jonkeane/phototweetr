@@ -25,5 +25,7 @@ Imports:
 Suggests: 
     testthat (>= 2.1.0),
     httptest,
-    covr
+    covr,
+    spelling
 RoxygenNote: 7.0.2
+Language: en-US

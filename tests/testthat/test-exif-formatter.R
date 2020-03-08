@@ -1,4 +1,4 @@
-exif_data <- exifr::read_exif(test_path("IMG_4907.jpg"))
+exif_data <- exifr::read_exif(test_path("orig", "IMG_4907.jpg"))
 
 test_that("formatting", {
   skip_if(Sys.info()['sysname'] == "Windows", "Unicode on windows \U1F643")

@@ -1,5 +1,5 @@
 new_image <- test_path("cleaned.jpg")
-file.copy(test_path("IMG_4907.jpg"), new_image, overwrite = TRUE)
+file.copy(test_path("orig", "IMG_4907.jpg"), new_image, overwrite = TRUE)
 
 test_that("cleaning works", {
   expect_silent(sanitize_exif(new_image))

@@ -41,13 +41,12 @@ schema <- data.frame(
 #'
 #' @param photo path to the photo
 #' @param con the databse to use
-#' @param orig_dir directory to place the original files
 #' @param proc_dir directory to place the processed files
 #'
 #' @return `TRUE` silently, if successful
 #' @export
 queue <- function(photo, con, orig_dir = "orig", proc_dir = "processed") {
-  df <- process_many(photo, orig_dir = orig_dir, proc_dir = proc_dir)
+  df <- process_many(photo, proc_dir = proc_dir)
 
   if (is.null(df)) {
     return(NULL)
@@ -60,23 +59,20 @@ queue <- function(photo, con, orig_dir = "orig", proc_dir = "processed") {
 }
 
 process_many <- function(photo, orig_dir, proc_dir) {
-  return(do.call(rbind, lapply(photo, process_one, orig_dir = orig_dir, proc_dir = proc_dir)))
+  return(do.call(rbind, lapply(photo, process_one, proc_dir = proc_dir)))
 }
 
-process_one <- function(photo, orig_dir, proc_dir) {
+process_one <- function(photo, proc_dir) {
   # extract exif
   exif_data <- exifr::read_exif(photo)
 
   # move file to orig, processed and clean
-  orig <- file.path(orig_dir, basename(photo))
   proced <- file.path(proc_dir, basename(photo))
-  file.copy(photo, orig)
   file.copy(photo, proced)
   sanitize_exif(proced, exif_data)
-  file.remove(photo)
 
   return(data.frame(
-    orig_file = orig,
+    orig_file = photo,
     tweet_file = proced,
     tweet_text = format_exif(exif_data),
     date_added = Sys.time(),
@@ -92,6 +88,9 @@ process_one <- function(photo, orig_dir, proc_dir) {
 #'
 #' @export
 update_one <- function(df, con) {
+  if (!"rowid" %in% colnames(df)) {
+    stop("The dataframe in `df` must have a rowid column.", call. = FALSE)
+  }
   DBI::dbExecute(con, glue_sql("DELETE FROM tweets WHERE rowid = {df$rowid};"))
   DBI::dbAppendTable(con, "tweets", df)
 }

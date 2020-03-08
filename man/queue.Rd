@@ -11,8 +11,6 @@ queue(photo, con, orig_dir = "orig", proc_dir = "processed")
 
 \item{con}{the databse to use}
 
-\item{orig_dir}{directory to place the original files}
-
 \item{proc_dir}{directory to place the processed files}
 }
 \value{

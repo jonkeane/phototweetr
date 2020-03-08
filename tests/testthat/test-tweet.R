@@ -4,8 +4,8 @@ test_that("tweet_photo works", {
     auth_rtweet()
 
     photo_df <- data.frame(
-      orig_file = test_path("IMG_4907.jpg"),
-      tweet_file = test_path("IMG_4907.jpg"),
+      orig_file = test_path("orig", "IMG_4907.jpg"),
+      tweet_file = test_path("orig", "IMG_4907.jpg"),
       tweet_text = "this is a test tweet with an image",
       date_added = "2020-03-07 07:53:04",
       date_tweeted = NA_character_,
