@@ -3,8 +3,7 @@ library("glue")
 
 # Must have setup:
 # Dirs:
-#   * triage - photos that haven't been processed
-#   * orig - originals that have been processed
+#   * orig - originals (i.e. where lightroom publishes to)
 #   * processed - photos that have had their metadata cleaned for twitter
 
 message(glue(
@@ -19,9 +18,9 @@ message(glue(
 con <- connect("phototweetr.sql")
 on.exit(DBI::dbDisconnect(con))
 
-### process any triage photos
-message("Queuing any photos in triage")
-triage_photos <- file.path("triage", list.files("triage", pattern = "(jpg|png|jpeg)$"))
+### process any orig photos
+message("Queuing any updated photos")
+triage_photos <- file.path("orig", list.files("orig", pattern = "(jpg|png|jpeg)$"))
 db_response <- queue(triage_photos, con = con)
 
 ### determine if it's time to tweet
@@ -44,7 +43,7 @@ if (!wait_and_window(last_tweeted)) {
 
 ### pick a photo and tweet
 message("Finding a photo to tweet")
-to_tweet <- DBI::dbGetQuery(con, "SELECT * FROM tweets WHERE tweeted == 0;")
+to_tweet <- DBI::dbGetQuery(con, "SELECT rowid, * FROM tweets WHERE tweeted == 0;")
 if (nrow(to_tweet) == 0) {
   message("There are no more tweets queued. Goodbye.")
   quit("no")

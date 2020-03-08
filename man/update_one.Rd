@@ -4,10 +4,10 @@
 \alias{update_one}
 \title{Update a photo in the tracking db}
 \usage{
-update_one(df, con)
+update_one(photo_df, con)
 }
 \arguments{
-\item{df}{dataframe with updated photo information (with a single row)}
+\item{photo_df}{dataframe with updated photo information (with a single row)}
 
 \item{con}{a sqlite connection}
 }
