@@ -7,6 +7,7 @@ render_tweet <-
 
 shinyServer(function(input, output, session) {
   con <- connect("phototweetr.sql")
+  print(normalizePath("phototweetr.sql"))
   photos_full <- dbGetQuery(con, "SELECT rowid, * FROM tweets;")
   dbDisconnect(con)
   options(DT.options = list(pageLength = 15))
