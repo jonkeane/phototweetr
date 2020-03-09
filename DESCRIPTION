@@ -26,6 +26,7 @@ Suggests:
     testthat (>= 2.1.0),
     httptest,
     covr,
-    spelling
+    spelling,
+    shiny
 RoxygenNote: 7.0.2
 Language: en-US
