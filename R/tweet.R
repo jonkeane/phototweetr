@@ -7,13 +7,15 @@
 #'
 #' @return the `photo_df`, updated with tweet time, etc.
 #' @export
-tweet_photo <- function(photo_df, path = "", ...) {
+tweet_photo <- function(photo_df, path = NULL, ...) {
   message(glue("Attempting to tweet photo {photo_df$tweet_file}"))
-  tweet <- rtweet::post_tweet(
-    status = photo_df$tweet_text,
-    media = file.path(path, photo_df$tweet_file),
-    ...
-  )
+  if (!is.null(path)) {
+    image_path <- file.path(path, photo_df$tweet_file)
+  } else {
+    image_path <- photo_df$tweet_file
+  }
+
+  tweet <- rtweet::post_tweet(status = photo_df$tweet_text, media = image_path, ...)
 
   if (httr::status_code(tweet) == 200L) {
     photo_df$tweeted <- TRUE

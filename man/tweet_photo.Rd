@@ -4,7 +4,7 @@
 \alias{tweet_photo}
 \title{Tweet a photo out}
 \usage{
-tweet_photo(photo_df, path = "", ...)
+tweet_photo(photo_df, path = NULL, ...)
 }
 \arguments{
 \item{photo_df}{a dataframe with information about the photo to be tweeted}
