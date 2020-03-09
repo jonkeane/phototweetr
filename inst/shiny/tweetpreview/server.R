@@ -3,12 +3,11 @@ library(DT)
 library(phototweetr)
 library(RSQLite)
 
-con <- connect("phototweetr.sql")
-photos_full <- dbGetQuery(con, "SELECT rowid, * FROM tweets;")
-dbDisconnect(con)
-
 shinyServer(function(input, output, session) {
   options(DT.options = list(pageLength = 15))
+  con <- connect("phototweetr.sql")
+  photos_full <- dbGetQuery(con, "SELECT rowid, * FROM tweets;")
+  dbDisconnect(con)
 
   photos <- photos_full[,c("orig_file", "tweet_text")]
   photos$tweet_text <- paste(substring(photos$tweet_text, 0, 25), "...")
