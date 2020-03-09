@@ -4,10 +4,13 @@
 \alias{tweet_photo}
 \title{Tweet a photo out}
 \usage{
-tweet_photo(photo_df, ...)
+tweet_photo(photo_df, path = "", ...)
 }
 \arguments{
 \item{photo_df}{a dataframe with information about the photo to be tweeted}
+
+\item{path}{the path to the \code{phototweetr} directory (the one above "orig"
+typically)}
 
 \item{...}{arguments passed to \code{rtweet::post_tweet}}
 }

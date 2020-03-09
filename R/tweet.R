@@ -1,15 +1,17 @@
 #' Tweet a photo out
 #'
 #' @param photo_df a dataframe with information about the photo to be tweeted
+#' @param path the path to the `phototweetr` directory (the one above "orig"
+#' typically)
 #' @param ... arguments passed to `rtweet::post_tweet`
 #'
 #' @return the `photo_df`, updated with tweet time, etc.
 #' @export
-tweet_photo <- function(photo_df, ...) {
+tweet_photo <- function(photo_df, path = "", ...) {
   message(glue("Attempting to tweet photo {photo_df$tweet_file}"))
   tweet <- rtweet::post_tweet(
     status = photo_df$tweet_text,
-    media = photo_df$tweet_file,
+    media = file.path(path, photo_df$tweet_file),
     ...
   )
 

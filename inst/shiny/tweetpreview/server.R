@@ -51,11 +51,11 @@ shinyServer(function(input, output, session) {
 tweet_immediately <- function(id, photo_df) {
   photo_to_tweet <- photo_df[id, ]
 
-    message("Authenticating with Twitter")
+  message("Authenticating with Twitter")
   token <- auth_rtweet(set_renv = FALSE)
 
   message(glue::glue("Tweeting out photo {photo_to_tweet$orig_file}"))
-  photo_to_tweet <- tweet_photo(photo_to_tweet, token = token)
+  photo_to_tweet <- tweet_photo(photo_to_tweet, path = calling_dir, token = token)
 
   message("Updating the database")
   con <- connect(file.path(calling_dir, "phototweetr.sql"))
