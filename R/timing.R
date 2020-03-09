@@ -30,6 +30,15 @@ wait_and_window <- function(then,
 
 one_week <- 60 * 60 * 24 * 7
 
+#' A weighted coin
+#'
+#' Flips a coin that is weighted
+#'
+#' @param positive the odds of `TRUE` (default: 1)
+#' @param negative the offs of `FALSE` (default: 14)
+#'
+#' @return logical
+#' @export
 weighted_coin <- function(positive = 1, negative = 14) {
   return(sample(c(TRUE, FALSE), 1, prob = c(positive, negative)))
 }
