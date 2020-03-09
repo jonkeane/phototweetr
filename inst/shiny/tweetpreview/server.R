@@ -5,7 +5,7 @@ library(RSQLite)
 
 shinyServer(function(input, output, session) {
   options(DT.options = list(pageLength = 15))
-  con <- connect("phototweetr.sql")
+  con <- connect(file.path(calling_dir, "phototweetr.sql"))
   photos_full <- dbGetQuery(con, "SELECT rowid, * FROM tweets;")
   dbDisconnect(con)
 
@@ -26,7 +26,7 @@ shinyServer(function(input, output, session) {
 
   output$tweet_text <- renderText(gsub("\n", "<br />", photos_full[input$photo_df_rows_selected, "tweet_text"]))
   output$photo <- renderImage({
-    photo_loc <- photos_full[input$photo_df_rows_selected, "orig_file"]
+    photo_loc <- file.path(calling_dir, photos_full[input$photo_df_rows_selected, "orig_file"])
 
     # if the selection hasn't been made yet, setup an empty character
     if (length(photo_loc) == 0) {
@@ -55,7 +55,7 @@ tweet_immediately <- function(id, photo_df) {
   photo_to_tweet <- tweet_photo(photo_to_tweet, token = token)
 
   message("Updating the database")
-  con <- connect("phototweetr.sql")
+  con <- connect(file.path(calling_dir, "phototweetr.sql"))
   update_one(photo_to_tweet, con)
   dbDisconnect(con)
 }
