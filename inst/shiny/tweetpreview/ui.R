@@ -5,11 +5,19 @@ navbarPage(
 
   tabPanel(
     'Tweet preview',
+    tags$head(tags$style(
+      type="text/css",
+      "#photo {overflow: hidden}",
+    )),
     fluidRow(
       column(
         6, hr(),
         htmlOutput('tweet_text'),
-        imageOutput('photo')
+        imageOutput('photo', height = "500px"),
+        fluidRow(
+          align="bottom",
+          actionButton("tweet_now", "tweet immediately", width = "100%")
+        )
       ),
       column(
         6,

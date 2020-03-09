@@ -41,4 +41,23 @@ shinyServer(function(input, output, session) {
       contentType = 'image/jpg'
     )
   }, deleteFile = FALSE)
+
+  observeEvent(input$tweet_now, {
+    tweet_immediately(input$photo_df_rows_selected, photos_full)
+  })
 })
+
+tweet_immediately <- function(id, photo_df) {
+  photo_to_tweet <- photo_df[id, ]
+
+    message("Authenticating with Twitter")
+  token <- auth_rtweet(set_renv = FALSE)
+
+  message(glue::glue("Tweeting out photo {photo_to_tweet$orig_file}"))
+  photo_to_tweet <- tweet_photo(photo_to_tweet, token = token)
+
+  message("Updating the database")
+  con <- connect("../../phototweetr.sql")
+  update_one(photo_to_tweet, con)
+  dbDisconnect(con)
+}
