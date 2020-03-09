@@ -9,6 +9,9 @@ shinyServer(function(input, output, session) {
   photos_full <- dbGetQuery(con, "SELECT rowid, * FROM tweets;")
   dbDisconnect(con)
 
+  print(file.path(calling_dir, "phototweetr.sql"))
+  print(photos_full)
+
   photos <- photos_full[,c("orig_file", "tweet_text")]
   photos$tweet_text <- paste(substring(photos$tweet_text, 0, 25), "...")
 
