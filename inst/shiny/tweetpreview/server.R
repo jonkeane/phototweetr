@@ -43,14 +43,38 @@ shinyServer(function(input, output, session) {
     return(list(src = photo_loc, width = 500))
   }, deleteFile = FALSE)
 
+  observeEvent(input$tweet_button, {
+    tweet_modal(input$photo_df_rows_selected, photos_full)
+  })
+  # this might be better inside the modal, but for now is here
   observeEvent(input$tweet_now, {
     tweet_immediately(input$photo_df_rows_selected, photos_full)
   })
 
   observeEvent(input$show_image, {
-    show_photo(input$photo_df_rows_selected, photos_full)
+    photo_modal(input$photo_df_rows_selected, photos_full)
   })
+
 })
+
+tweet_modal <- function(id, photo_df) {
+  photo_file <- file.path(calling_dir, photo_df[id, "orig_file"])
+  showModal(
+    div(modalDialog(
+      title = "Are you sure you want to tweet this?",
+      renderImage({
+        list(
+          src = photo_file,
+          "width" = "auto",
+          "height" = "auto"
+        )
+      }, deleteFile = FALSE), easyClose = TRUE,
+      footer = tagList(
+        modalButton("no"),
+        actionButton("tweet_now", "yes")
+      )), id = "photo_modal")
+  )
+}
 
 tweet_immediately <- function(id, photo_df) {
   photo_to_tweet <- photo_df[id, ]
@@ -67,8 +91,15 @@ tweet_immediately <- function(id, photo_df) {
   token <- auth_rtweet(set_renv = FALSE)
 
   message(glue::glue("Tweeting out photo {photo_to_tweet$orig_file}"))
-  # photo_to_tweet <- tweet_photo(photo_to_tweet, path = calling_dir, token = token)
-  photo_to_tweet$tweeted <- 1L
+  if (tolower(Sys.getenv("phototweetrnotweet", "")) == "true") {
+    # if the env var is set, then pretend to tweet
+    message(glue::glue("Pretending to tweet out photo {photo_to_tweet$orig_file}"))
+    photo_to_tweet$tweeted <- 1L
+    photo_to_tweet$date_tweeted <- Sys.time()
+  } else {
+    message(glue::glue("Tweeting out photo {photo_to_tweet$orig_file}"))
+    photo_to_tweet <- tweet_photo(photo_to_tweet, path = calling_dir, token = token)
+  }
 
   message("Updating the database")
   con <- connect(file.path(calling_dir, "phototweetr.sql"))
@@ -78,7 +109,7 @@ tweet_immediately <- function(id, photo_df) {
   showModal(modalDialog(h2("\U002714 The photo was tweeted \U002714"), easyClose = TRUE))
 }
 
-show_photo <- function(id, photo_df) {
+photo_modal <- function(id, photo_df) {
   photo_file <- file.path(calling_dir, photo_df[id, "orig_file"])
   showModal(div(modalDialog(renderImage({
     list(

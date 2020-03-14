@@ -20,7 +20,7 @@ navbarPage(
         6, hr(),
         htmlOutput('tweet_text'),
         imageOutput('photo', height = "285px", width = "500px"),
-        actionButton("tweet_now", "tweet immediately", width = "500px"),
+        actionButton("tweet_button", "tweet immediately", width = "500px"),
         br(),
         br(),
         actionButton("show_image", "show full image", width = "500px")
