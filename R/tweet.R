@@ -15,21 +15,36 @@ tweet_photo <- function(photo_df, path = NULL, ...) {
     image_path <- photo_df$tweet_file
   }
 
-  tweet_text <- tweet_splitter(photo_df[,c("caption", "tags", "exposure")])
+  tweet_info <- unlist(photo_df[,c("caption", "tags", "exposure")])
+  tweet_text <- tweet_splitter(tweet_info)
 
   if (length(tweet_text) == 1) {
     tweeted_text <- tweet_collapse(tweet_text)
-    tweet <- rtweet::post_tweet(status = tweeted_text, media = image_path, ...)
+    tweet_response <- rtweet::post_tweet(status = tweeted_text, media = image_path, ...)
   } else {
-    stop("Can't tweet more than one tweet")
+    text <- tweet_collapse(tweet_text[[1]])
+    tweet_response <- rtweet::post_tweet(status = text, media = image_path, ...)
+    reply_id <- httr::content(tweet_response)$id_str
+
+    # Iterate through each reply after the first
+    for (tweet in tweet_text[-1]) {
+      tweet_response <- rtweet::post_tweet(
+        status = tweet_collapse(tweet),
+        in_reply_to_status_id = reply_id,
+        auto_populate_reply_metadata = TRUE,
+        ...
+      )
+      reply_id <- httr::content(tweet_response)$id_str
+    }
+    tweeted_text <- paste0(lapply(tweet_text, tweet_collapse), collapse = "\\")
   }
 
-  if (httr::status_code(tweet) == 200L) {
+  if (httr::status_code(tweet_response) == 200L) {
     photo_df$tweeted <- TRUE
     photo_df$tweeted_text <- tweeted_text
     photo_df$date_tweeted <- Sys.time()
   } else {
-    photo_df$tweet_error <- httr::content(tweet)
+    photo_df$tweet_error <- httr::content(tweet_response)
   }
 
   return(photo_df)
@@ -50,7 +65,7 @@ tweet_photo <- function(photo_df, path = NULL, ...) {
 #' @export
 auth_rtweet <- function(...) {
   return(rtweet::create_token(
-    app = "phototweetr",
+    app = "phototweetr-meta",
     consumer_key = Sys.getenv("rtweet_api_key"),
     consumer_secret = Sys.getenv("rtweet_api_secret_key"),
     access_token = Sys.getenv("rtweet_access_token"),
@@ -106,8 +121,9 @@ tweet_splitter <- function(text) {
   # now add on the last chunk IFF it can fit, if not just put it in another tweet
   last_chunk <- text["exposure"]
 
-  if (check_length(c(chunks[-1], last_chunk))) {
-    chunks[[-1]] <- c(chunks[[-1]], last_chunk)
+  # TODO: this is actually broken
+  if (check_length(c(chunks[[length(chunks)]], last_chunk))) {
+    chunks[[length(chunks)]] <- c(chunks[[length(chunks)]], last_chunk)
   } else {
     chunks <- c(chunks, last_chunk)
   }
