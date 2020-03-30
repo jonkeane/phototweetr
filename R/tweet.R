@@ -115,6 +115,12 @@ tweet_splitter <- function(text) {
   return(chunks)
 }
 
+#' Collapse tweet text
+#'
+#' @param text text to flatten
+#'
+#' @return the text flattened with new lines
+#' @export
 tweet_collapse <- function(text) {
   return(glue::glue_collapse(unlist(text), sep = "\n"))
 }

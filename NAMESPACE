@@ -3,6 +3,7 @@
 export(auth_rtweet)
 export(connect)
 export(queue)
+export(tweet_collapse)
 export(tweet_photo)
 export(update_one)
 export(wait_and_window)
