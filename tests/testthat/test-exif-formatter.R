@@ -14,7 +14,7 @@ test_that("formatting", {
   )
 })
 
-test_that("", {
+test_that("separators", {
   exif_data <- data.frame(
     Title = "Title",
     Description = "Description",
@@ -30,5 +30,68 @@ test_that("", {
   expect_equal(
     text(exif_data),
     "Description"
+  )
+})
+
+test_that("tweet_splitter", {
+  # if it fits in one tweet, it collapses
+  text <- c(
+    caption = "one",
+    exposure = "two",
+    camera = "three",
+    tags = "#four"
+  )
+  expect_identical(tweet_splitter(text), tweet_collapse(text))
+
+  # if the caption+tags fit, make the exposure be a second tweet
+  text <- c(
+    caption = paste(rep("1", 255), collapse = ""),
+    exposure = "two",
+    camera = "three",
+    tags = "#twenty  #characters"
+  )
+  expect_identical(
+    tweet_splitter(text),
+    glue_collapse(c(
+      tweet_collapse(text[c("caption", "tags")]),
+      tweet_collapse(text[c("exposure", "camera")])
+    ),
+    sep = "{{tweet break}}"
+    )
+  )
+
+  # if the caption+some tags fit, split that way
+  text <- c(
+    caption = paste(rep("1111 ", 51), collapse = ""),
+    exposure = "two",
+    camera = "three",
+    tags = "#twenty  #characters #again #more #characters"
+  )
+  expect_identical(
+    tweet_splitter(text),
+    glue_collapse(c(
+      tweet_collapse(c(text["caption"], "#twenty  #characters")),
+      tweet_collapse(c("#again #more #characters", text[c("exposure", "camera")]))
+    ),
+    sep = "{{tweet break}}"
+    )
+  )
+
+  # but if the exposure info would break, that goes separately
+  text <- c(
+    caption = paste(rep("1111 ", 51), collapse = ""),
+    exposure = "two",
+    camera = paste(rep("three ", 45), collapse = ""),
+    tags = "#twenty  #characters #again #more #characters"
+  )
+  expect_identical(
+    tweet_splitter(text),
+    glue_collapse(c(
+      tweet_collapse(c(text["caption"], "#twenty  #characters")),
+      tweet_collapse("#again #more #characters"),
+      tweet_collapse(text[c("exposure", "camera")])
+    ),
+    sep = "{{tweet break}}"
+    )
   )
 })
