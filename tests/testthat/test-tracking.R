@@ -17,7 +17,9 @@ test_that("Queueing and processing", {
   data_out <- DBI::dbGetQuery(con, "SELECT * FROM tweets")
   expect_identical(data_out$orig_file, test_path("orig", "IMG_4907.jpg"))
   expect_identical(data_out$tweet_file, test_path("processed", "IMG_4907.jpg"))
-  expect_true(grepl("Fuji from Hakone II", data_out$tweet_text))
+  expect_true(grepl("Fuji from Hakone II", data_out$caption))
+  expect_true(grepl("#Fuji-san", data_out$tags))
+  expect_true(grepl("\U0001f4f8105mm • 1/500s", data_out$exposure))
   expect_identical(data_out$tweeted, 0L)
 
 

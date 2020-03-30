@@ -2,7 +2,7 @@
     "created_at": "Fri Mar 06 15:23:48 +0000 2020",
     "id": 1235949208038969344,
     "id_str": "1235949208038969344",
-    "text": "this is a test tweet with an image https://t.co/1mVstJvzCQ",
+    "text": "this is a test tweet with an image\nISO etc.\n#tag #tag2 https://t.co/1mVstJvzCQ",
     "truncated": false,
     "entities": {
         "hashtags": [

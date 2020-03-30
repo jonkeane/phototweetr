@@ -15,10 +15,18 @@ tweet_photo <- function(photo_df, path = NULL, ...) {
     image_path <- photo_df$tweet_file
   }
 
-  tweet <- rtweet::post_tweet(status = photo_df$tweet_text, media = image_path, ...)
+  tweet_text <- tweet_splitter(photo_df[,c("caption", "tags", "exposure")])
+
+  if (length(tweet_text) == 1) {
+    tweeted_text <- tweet_collapse(tweet_text)
+    tweet <- rtweet::post_tweet(status = tweeted_text, media = image_path, ...)
+  } else {
+    stop("Can't tweet more than one tweet")
+  }
 
   if (httr::status_code(tweet) == 200L) {
     photo_df$tweeted <- TRUE
+    photo_df$tweeted_text <- tweeted_text
     photo_df$date_tweeted <- Sys.time()
   } else {
     photo_df$tweet_error <- httr::content(tweet)
@@ -50,3 +58,72 @@ auth_rtweet <- function(...) {
     ...
   ))
 }
+
+twitter_max <- 280
+tweet_breaker <- "\\"
+
+tweet_splitter <- function(text) {
+  # TODO: how to count emojis as 2 charactrs, CJK as 2 characters, etc.
+  # https://developer.twitter.com/en/docs/basics/counting-characters
+  # currently this uses utf8::utf8_width, which is close, but overcounts
+  # combining emojis
+
+  # if the text all together is within one tweet, we're done. But ensure that
+  # the order is caption exposure tags
+  if (check_length(text)) {
+    return(list(text[c("caption", "exposure", "tags")]))
+  }
+
+  # first, try to put the photo settings in the next tweet
+  # the settings should always be under one tweet, so no need to check those
+  if (check_length(text[c("caption", "tags")])) {
+    return(list(text[c("caption", "tags")], text["exposure"]))
+  }
+
+  # finally, start with the caption and tags, and split them in to chunks that
+  # are under the limit
+  chunks <- text[c("caption", "tags")]
+  chunks <- unlist(strsplit(chunks, " "))
+  chunk_lengths <- vapply(chunks, utf8::utf8_width, integer(1)) + 1
+  start <- 1
+  chunked_chunks <- list()
+  for (i in seq_along(chunk_lengths)) {
+    end <- i
+    if (sum(chunk_lengths[start:end], chunk_lengths[end+1], na.rm = TRUE) > twitter_max) {
+
+      chunked_chunks[length(chunked_chunks) + 1] <- list(chunks[start:end])
+      start <- end + 1
+    }
+
+    # clean up at the end
+    if (end == length(chunk_lengths)) {
+      chunked_chunks[length(chunked_chunks) + 1] <- list(chunks[start:end])
+    }
+  }
+
+  chunks <- lapply(chunked_chunks, paste, collapse = " ")
+
+  # now add on the last chunk IFF it can fit, if not just put it in another tweet
+  last_chunk <- text["exposure"]
+
+  if (check_length(c(chunks[-1], last_chunk))) {
+    chunks[[-1]] <- c(chunks[[-1]], last_chunk)
+  } else {
+    chunks <- c(chunks, last_chunk)
+  }
+
+  return(chunks)
+}
+
+tweet_collapse <- function(text) {
+  return(glue::glue_collapse(unlist(text), sep = "\n"))
+}
+
+check_length <- function(input, max = twitter_max) {
+  input <- tweet_collapse(input)
+
+  n_char <- sum(utf8::utf8_width(as.character(input)), na.rm = TRUE)
+
+  return(n_char <= twitter_max)
+}
+
