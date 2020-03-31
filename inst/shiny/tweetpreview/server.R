@@ -4,12 +4,17 @@ library(phototweetr)
 library(RSQLite)
 
 process_photos_df <- function(photo_df) {
-  photo_df$tweet_text <- paste(substring(photo_df$tweet_text, 0, 25), "...")
+  text_preview <- paste(
+    photo_df$caption,
+    photo_df$exposre,
+    photo_df$tags
+  )
+  photo_df$tweet_text_preview <- paste(substring(text_preview, 0, 25), "...")
   photo_df$orig_file <- gsub("orig/", "", photo_df$orig_file)
   photo_df[photo_df$tweeted == 1, ]$tweeted <- "\U002714"
   photo_df[photo_df$tweeted == 0, ]$tweeted <- ""
 
-  return(photo_df[,c("orig_file", "tweet_text", "tweeted")])
+  return(photo_df[,c("orig_file", "tweet_text_preview", "tweeted")])
 }
 
 shinyServer(function(input, output, session) {
@@ -31,7 +36,11 @@ shinyServer(function(input, output, session) {
   # than the screen
   output$photo_df_full <- DT::renderDataTable(photos_full, rownames = FALSE)
 
-  output$tweet_text <- renderText(gsub("\n", "<br />", photos_full[input$photo_df_rows_selected, "tweet_text"]))
+  output$tweet_text <- renderText(
+    paste0(
+      photos_full[input$photo_df_rows_selected, c("caption", "exposure", "tags")],
+      collapse = "<br />"
+    ))
   output$photo <- renderImage({
     photo_loc <- file.path(calling_dir, photos_full[input$photo_df_rows_selected, "orig_file"])
 
@@ -91,14 +100,14 @@ tweet_immediately <- function(id, photo_df) {
   token <- auth_rtweet(set_renv = FALSE)
 
   message(glue::glue("Tweeting out photo {photo_to_tweet$orig_file}"))
-  if (tolower(Sys.getenv("phototweetrnotweet", "")) == "true") {
-    # if the env var is set, then pretend to tweet
+  if (tolower(Sys.getenv("phototweetrtweet", "")) == "true") {
+    # if the env var is set, then actually tweet
+    message(glue::glue("Tweeting out photo {photo_to_tweet$orig_file}"))
+    photo_to_tweet <- tweet_photo(photo_to_tweet, path = calling_dir, token = token)
+  } else {
     message(glue::glue("Pretending to tweet out photo {photo_to_tweet$orig_file}"))
     photo_to_tweet$tweeted <- 1L
     photo_to_tweet$date_tweeted <- Sys.time()
-  } else {
-    message(glue::glue("Tweeting out photo {photo_to_tweet$orig_file}"))
-    photo_to_tweet <- tweet_photo(photo_to_tweet, path = calling_dir, token = token)
   }
 
   message("Updating the database")

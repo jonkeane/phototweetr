@@ -1,29 +1,19 @@
-#' Format EXIF for tweet
-#'
-#' Takes the EXIF data (from `exifr::read_exif()`) and formats it into a tweet.
-#'
-#' @param exif_data EXIF data from `exifr::read_exif()`
-#'
-#' @return text for a tweet
-#' @export
-format_exif <- function(exif_data) {
+grab_exif_list <- function(exif_data) {
   # convert to a data.frame to avoid tibble's unknown or uninitialized columns
   # warnings
   exif_data <- as.data.frame(exif_data)
 
-  text <- c(
-    text(exif_data),
-    paste0("\U1f4f8", exposure(exif_data)),
-    paste0("\U1f4f7", camera(exif_data)),
-    tags(exif_data)
+  text <- list(
+    caption = text(exif_data),
+    exposure_camera = paste0(
+      "\U1f4f8", exposure(exif_data), "\n",
+      "\U1f4f7", camera(exif_data)
+    ),
+    tags = tags(exif_data)
   )
 
-  # TODO: What to do if over twitter_max?
-
-  return(glue::glue_collapse(text, sep = "\n"))
+  return(text)
 }
-
-twitter_max <- 280
 
 text <- function(exif_data) {
   # Title, Description

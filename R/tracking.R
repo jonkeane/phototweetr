@@ -22,10 +22,13 @@ connect <- function(db_path, clean = FALSE) {
 schema <- data.frame(
   orig_file = character(0),
   tweet_file = character(0),
-  tweet_text = character(0),
+  caption = character(0),
+  tags = character(0),
+  exposure = character(0),
   date_added = character(0),
   date_tweeted = character(0),
   tweeted = integer(0),
+  tweeted_text = character(0),
   tweet_error = character(0),
   # these will be null for now, but might be useful
   tweet_geo = character(0),
@@ -60,7 +63,7 @@ queue <- function(photo, con, proc_dir = "processed") {
 
 process_many <- function(photo, proc_dir, con) {
   photos_in_db <- DBI::dbGetQuery(
-    con, "SELECT rowid, orig_file, date_added FROM tweets WHERE tweeted == 0;"
+    con, "SELECT rowid, orig_file, date_added, tweeted FROM tweets WHERE tweeted == 0;"
   )
 
   photos_in_folder <- data.frame(orig_file = photo, stringsAsFactors = FALSE)
@@ -89,9 +92,11 @@ process_one <- function(photo_df, proc_dir, con) {
 
 maybe_update_one <- function(photo_df, proc_dir, con) {
   photo <- photo_df$orig_file
-  # check if the file version is newer than the DB
+
+  # check if the file version is newer than the DB (and this hasn't been tweeted
+  # already)
   file_mtime <- file.mtime(photo)
-  if (file_mtime > photo_df$date_added) {
+  if (file_mtime > photo_df$date_added && !isTRUE(photo_df$tweeted)) {
     # if the file mtime is after the db time, then update the photo
     # TODO: remove from the DB
     DBI::dbExecute(con, glue_sql("DELETE FROM tweets WHERE rowid = {photo_df$rowid};"))
@@ -114,10 +119,14 @@ add_new_one <- function(photo_df, proc_dir) {
   file.copy(photo, proced)
   sanitize_exif(proced, exif_data)
 
+  exif_list <- grab_exif_list(exif_data)
+
   return(data.frame(
     orig_file = photo,
     tweet_file = proced,
-    tweet_text = format_exif(exif_data),
+    caption = exif_list$caption,
+    tags = exif_list$tags,
+    exposure = exif_list$exposure_camera,
     date_added = Sys.time(),
     tweeted = FALSE,
     stringsAsFactors = FALSE

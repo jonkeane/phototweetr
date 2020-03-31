@@ -21,7 +21,8 @@ Imports:
     MASS,
     RSQLite,
     DBI,
-    httr
+    httr,
+    utf8
 Suggests: 
     testthat (>= 2.1.0),
     httptest,
