@@ -62,7 +62,7 @@ jobs:
           sudo -s eval "$sysreqs"
 
       - name: Install rcpp for macOS devel (see Rcpp issue 1060)
-        if: runner.os == 'macOS' && r == 'devel'
+        if: runner.os == 'macOS' && ${{ matrix.config.r }} == 'devel'
         run: install.packages("Rcpp", repos="https://rcppcore.github.io/drat")
         shell: Rscript {0}
 
