@@ -63,7 +63,7 @@ jobs:
 
       - name: Install rcpp for macOS devel (see Rcpp issue 1060)
         if: runner.os == 'macOS' && ${{ matrix.config.r }} == 'devel'
-        run: install.packages("Rcpp", repos="https://rcppcore.github.io/drat")
+        run: remotes::install_dev("Rcpp")
         shell: Rscript {0}
 
       - name: Install dependencies
