@@ -57,7 +57,8 @@ test_that("already in DB, need to update", {
     rowid = 1L,
     orig_file = test_path("orig", "IMG_4907.jpg"),
     date_added = "2000-01-01 00:00:00",
-    stringsAsFactors = FALSE
+    stringsAsFactors = FALSE,
+    tweeted = 0L
   )
 
   out <- process_one(photo_df, test_path("processed"), con)
@@ -120,7 +121,7 @@ test_that("schema_update", {
 
   # there are still three rows, but the dates updated are new
   data_out <- DBI::dbGetQuery(con, "SELECT * FROM tweets")
-  expect_identical(nrow(data_out), 3L)
+  expect_identical(nrow(data_out), 2L)
   expect_true(all(data_out$date_added > as.POSIXct("1969-01-01 00:00:00")))
 })
 
