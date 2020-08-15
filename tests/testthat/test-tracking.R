@@ -87,3 +87,61 @@ test_that("Update", {
   data <- DBI::dbGetQuery(con, "SELECT rowid, * FROM tweets LIMIT 1")
   expect_identical(data$tweeted, 1L)
 })
+
+test_that("schema_update", {
+  # add a column to the schema
+  new_schema <- schema
+  new_schema$new_col <- character(0)
+
+  # add a few photos
+  queue(
+    c(test_path("orig", "copy-1.jpg"), test_path("orig", "copy-2.jpg")),
+    con,
+    proc_dir = test_path("processed")
+  )
+
+  # simulate what happens in process_many
+  photos_to_process <- get_photos_to_proc(con, test_path(c("orig/IMG_4907.jpg", "orig/copy-1.jpg", "orig/copy-2.jpg")))
+  photos_to_process$date_added <- as.POSIXct(photos_to_process$date_added)
+
+  expect_message(
+    new_process <- schema_update(con, photos_to_process, new_schema = new_schema),
+    "The schema has updated"
+  )
+
+  # the date has been updated
+  expect_equal(new_process$date_added, rep(as.POSIXct("1969-01-01 00:00:00"), 3))
+
+  # the schema has been updated
+  db_schema <- DBI::dbGetQuery(
+    con, "SELECT * FROM tweets LIMIT 0;"
+  )
+  expect_identical(new_schema, db_schema)
+
+  # there are still three rows, but the dates updated are new
+  data_out <- DBI::dbGetQuery(con, "SELECT * FROM tweets")
+  expect_identical(nrow(data_out), 3L)
+  expect_true(all(data_out$date_added > as.POSIXct("1969-01-01 00:00:00")))
+})
+
+
+test_that("schema_update is a no-op if there are no changes", {
+  # add a few photos
+  queue(
+    c(test_path("orig", "copy-1.jpg"), test_path("orig", "copy-2.jpg")),
+    con,
+    proc_dir = test_path("processed")
+  )
+
+  # simulate what happens in process_many
+  photos_to_process <- get_photos_to_proc(con, test_path(c("orig/IMG_4907.jpg", "orig/copy-1.jpg", "orig/copy-2.jpg")))
+  photos_to_process$date_added <- as.POSIXct(photos_to_process$date_added)
+
+  # schema_update is a no-op if there are no changes
+  expect_message(
+    new_process <- schema_update(con, photos_to_process, new_schema = schema),
+    NA
+  )
+
+  expect_identical(photos_to_process, new_process)
+})

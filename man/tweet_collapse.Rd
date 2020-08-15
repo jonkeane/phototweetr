@@ -10,7 +10,7 @@ tweet_collapse(text)
 \item{text}{text to flatten}
 }
 \value{
-the text joined with new lines
+the text flattened with new lines
 }
 \description{
 Collapse tweet text

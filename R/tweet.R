@@ -17,13 +17,14 @@ tweet_photo <- function(photo_df, path = NULL, ...) {
 
   tweet_info <- unlist(photo_df[,c("caption", "tags", "exposure")])
   tweet_text <- tweet_splitter(tweet_info)
+  image_alt <- photo_df$alt_text
 
   if (length(tweet_text) == 1) {
     tweeted_text <- tweet_collapse(tweet_text)
-    tweet_response <- rtweet::post_tweet(status = tweeted_text, media = image_path, ...)
+    tweet_response <- rtweet::post_tweet(status = tweeted_text, media = image_path, ..., media_alt_text = image_alt)
   } else {
     text <- tweet_collapse(tweet_text[[1]])
-    tweet_response <- rtweet::post_tweet(status = text, media = image_path, ...)
+    tweet_response <- rtweet::post_tweet(status = text, media = image_path, ..., media_alt_text = image_alt)
     reply_id <- httr::content(tweet_response)$id_str
 
     # Iterate through each reply after the first

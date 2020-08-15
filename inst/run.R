@@ -14,7 +14,7 @@ message(glue(
   .sep = "\n"
   ))
 
-### conect to the things
+### connect to the things
 con <- connect("phototweetr.sql")
 on.exit(DBI::dbDisconnect(con))
 
