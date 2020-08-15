@@ -117,7 +117,7 @@ test_that("schema_update", {
   db_schema <- DBI::dbGetQuery(
     con, "SELECT * FROM tweets LIMIT 0;"
   )
-  expect_identical(new_schema, db_schema)
+  expect_setequal(colnames(new_schema), colnames(db_schema))
 
   # there are still three rows, but the dates updated are new
   data_out <- DBI::dbGetQuery(con, "SELECT * FROM tweets")
