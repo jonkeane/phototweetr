@@ -13,8 +13,10 @@ process_photos_df <- function(photo_df) {
   photo_df$orig_file <- gsub("orig/", "", photo_df$orig_file)
   photo_df[photo_df$tweeted == 1, ]$tweeted <- "\U002714"
   photo_df[photo_df$tweeted == 0, ]$tweeted <- ""
+  photo_df$alt <- ""
+  photo_df[is.na(photo_df$alt_text), ]$alt <- "\U002718"
 
-  return(photo_df[,c("orig_file", "tweet_text_preview", "tweeted")])
+  return(photo_df[,c("orig_file", "tweet_text_preview", "tweeted", "alt")])
 }
 
 shinyServer(function(input, output, session) {
@@ -49,7 +51,12 @@ shinyServer(function(input, output, session) {
       photo_loc <- ""
     }
 
-    return(list(src = photo_loc, width = 500))
+    return(list(
+      src = photo_loc,
+      width = 500,
+      title = photos_full[input$photo_df_rows_selected, "alt_text"] %||% "no text",
+      alt = photos_full[input$photo_df_rows_selected, "alt_text"] %||% "no text"
+    ))
   }, deleteFile = FALSE)
 
   observeEvent(input$tweet_button, {

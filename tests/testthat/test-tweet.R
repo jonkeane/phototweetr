@@ -9,6 +9,7 @@ test_that("tweet_photo works", {
       caption = "this is a test tweet with an image",
       tags = "#tag #tag2",
       exposure = "ISO etc.",
+      alt_text = "This is an image description",
       tweeted_text =  NA_character_,
       date_added = "2020-03-07 07:53:04",
       date_tweeted = NA_character_,

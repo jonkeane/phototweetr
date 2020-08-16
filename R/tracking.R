@@ -27,6 +27,7 @@ schema <- data.frame(
   exposure = character(0),
   date_added = character(0),
   date_tweeted = character(0),
+  alt_text = character(0),
   tweeted = integer(0),
   tweeted_text = character(0),
   tweet_error = character(0),
@@ -55,22 +56,16 @@ queue <- function(photo, con, proc_dir = "processed") {
     return(NULL)
   }
 
-  # TODO: what to do if the photo is already there?
-
   # add to DB
   return(DBI::dbWriteTable(con, "tweets", ugh_dates(df), append = TRUE))
 }
 
 process_many <- function(photo, proc_dir, con) {
-  photos_in_db <- DBI::dbGetQuery(
-    con, "SELECT rowid, orig_file, date_added, tweeted FROM tweets WHERE tweeted == 0;"
-  )
+  photos_to_process <- get_photos_to_proc(con, photo)
 
-  photos_in_folder <- data.frame(orig_file = photo, stringsAsFactors = FALSE)
-  photos_to_process <- merge(photos_in_folder, photos_in_db, all.x = TRUE)
-
-  photos_to_process$date_added <- as.POSIXct(photos_to_process$date_added)
-
+  # check if the schema has updated, if it has, we will mark all of the not-
+  # tweeted photos for updating
+  photos_to_process <- schema_update(con, photos_to_process)
   return(do.call(rbind, by(
     photos_to_process,
     seq_len(nrow(photos_to_process)),
@@ -79,6 +74,19 @@ process_many <- function(photo, proc_dir, con) {
     con = con,
     simplify = F
   )))
+}
+
+get_photos_to_proc <- function(con, photo) {
+  photos_in_db <- DBI::dbGetQuery(
+    con, "SELECT rowid, orig_file, date_added, tweeted FROM tweets;"
+  )
+
+  photos_in_folder <- data.frame(orig_file = photo, stringsAsFactors = FALSE)
+  photos_to_process <- merge(photos_in_folder, photos_in_db, all.x = TRUE)
+
+  photos_to_process$date_added <- as.POSIXct(photos_to_process$date_added)
+
+  return(photos_to_process)
 }
 
 process_one <- function(photo_df, proc_dir, con) {
@@ -96,7 +104,7 @@ maybe_update_one <- function(photo_df, proc_dir, con) {
   # check if the file version is newer than the DB (and this hasn't been tweeted
   # already)
   file_mtime <- file.mtime(photo)
-  if (file_mtime > photo_df$date_added && !isTRUE(photo_df$tweeted)) {
+  if (file_mtime > photo_df$date_added && !photo_df$tweeted) {
     # if the file mtime is after the db time, then update the photo
     # TODO: remove from the DB
     DBI::dbExecute(con, glue_sql("DELETE FROM tweets WHERE rowid = {photo_df$rowid};"))
@@ -128,9 +136,36 @@ add_new_one <- function(photo_df, proc_dir) {
     tags = exif_list$tags,
     exposure = exif_list$exposure_camera,
     date_added = Sys.time(),
+    alt_text = exif_data$ImageDescription %||% NA,
     tweeted = FALSE,
     stringsAsFactors = FALSE
   ))
+}
+
+schema_update <- function(con, photos_to_process, new_schema = schema) {
+  in_db <- DBI::dbGetQuery(con, "SELECT * FROM tweets LIMIT 0;")
+  # if there are differences, mark the database for updates
+  # we don't check if there are columns to remove since that would require copying
+  # the table, make changes, copy it back blah blah blah
+  cols_to_add <- setdiff(colnames(new_schema), colnames(in_db))
+  if (length(cols_to_add) == 0) {
+    # nothing to update, return quickly
+    return(photos_to_process)
+  }
+
+  message("The schema has updated, adding the new column(s) to the database.")
+
+  # add columns one by one
+  # TODO:  check that this all went fine?
+  results <- lapply(cols_to_add, function(col) {
+    type <- DBI::dbDataType(con, new_schema[[col]])
+    DBI::dbExecute(con, glue("ALTER TABLE tweets ADD COLUMN {col} {type}"))
+  })
+
+  # mark the update dates to ridiculously early so that they are updated
+  photos_to_process[, "date_added"] <- as.POSIXct("1969-01-01 00:00:00")
+
+  return(photos_to_process)
 }
 
 #' Update a photo in the tracking db
