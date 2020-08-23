@@ -19,7 +19,8 @@ test_that("formatting", {
 
 test_that("comment parsing", {
   exif_data <- data.frame(
-    UserComment = "This is a caption\n-Make=fdasf\n-Model=fdas\n-ISO=50\nFilm Make: Ilford\nFilm Type: Pan F+\nLensTaggerVer:1.7.6"
+    UserComment = "This is a caption\n-Make=fdasf\n-Model=fdas\n-ISO=50\nFilm Make: Ilford\nFilm Type: Pan F+\nLensTaggerVer:1.7.6",
+    stringsAsFactors = FALSE
   )
 
   expect_equal(
