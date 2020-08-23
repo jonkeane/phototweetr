@@ -22,7 +22,8 @@ connect <- function(db_path, clean = FALSE) {
 schema <- data.frame(
   orig_file = character(0),
   tweet_file = character(0),
-  caption = character(0),
+  title = character(0),
+  comment = character(0),
   tags = character(0),
   exposure = character(0),
   date_added = character(0),
@@ -132,11 +133,12 @@ add_new_one <- function(photo_df, proc_dir) {
   return(data.frame(
     orig_file = photo,
     tweet_file = proced,
-    caption = exif_list$caption,
+    title = exif_list$title %||% NA,
+    comment = exif_list$comment %||% NA,
+    alt_text = exif_data$ImageDescription %||% NA,
     tags = exif_list$tags,
     exposure = exif_list$exposure_camera,
     date_added = Sys.time(),
-    alt_text = exif_data$ImageDescription %||% NA,
     tweeted = FALSE,
     stringsAsFactors = FALSE
   ))
