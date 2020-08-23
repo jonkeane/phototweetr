@@ -37,7 +37,7 @@ tweet_photo <- function(photo_df, path = NULL, ...) {
       )
       reply_id <- httr::content(tweet_response)$id_str
     }
-    tweeted_text <- paste0(lapply(tweet_text, tweet_collapse), collapse = "\\")
+    tweeted_text <- paste0(lapply(tweet_text, tweet_collapse), collapse = "\\\\")
   }
 
   if (httr::status_code(tweet_response) == 200L) {
