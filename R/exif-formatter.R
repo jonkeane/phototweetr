@@ -4,7 +4,9 @@ grab_exif_list <- function(exif_data) {
   exif_data <- as.data.frame(exif_data)
 
   text <- list(
-    caption = text(exif_data),
+    title = exif_data$Title,
+    comment = clean_comment(exif_data),
+    image_description = exif_data$ImageDescription,
     exposure_camera = paste0(
       "\U1f4f8", exposure(exif_data), "\n",
       "\U1f4f7", camera(exif_data)
@@ -13,11 +15,6 @@ grab_exif_list <- function(exif_data) {
   )
 
   return(text)
-}
-
-text <- function(exif_data) {
-  # Title, Description
-  return(glue_collapse(c(exif_data$Title, exif_data$Description), sep = " \u2022 "))
 }
 
 exposure <- function(exif_data) {
@@ -39,6 +36,26 @@ tags <- function(exif_data) {
   # what about subject?
   tags <- gsub(" ", "", exif_data$Keywords[[1]])
   return(glue_collapse(paste0("#", tags), sep = " "))
+}
+
+clean_comment <- function(exif_data, exclude_vers = TRUE) {
+  # Necessary for tags created when using the lens tagger plugin for lightroom.
+  # It cleans out extra arguments that are added to comment by LensTagger as
+  # well as the errant version information — https://www.lenstagger.com
+  if (is.null(exif_data$UserComment)) {
+    return(NULL)
+  }
+  comments <- strsplit(exif_data$UserComment, "\n")[[1]]
+  clean <- function(string, version = exclude_vers) {
+    errant_tag <- grepl("^-Make=|^-Model=|^-ISO=", string, ignore.case = TRUE)
+    errant_version <- grepl("^LensTaggerVer:", string, ignore.case = TRUE)
+    if (version) {
+      return(!(errant_tag | errant_version))
+    } else {
+      return(!errant_tag)
+    }
+  }
+  return(paste0(Filter(clean, comments), collapse = "\n"))
 }
 
 # for geo info:

@@ -4,17 +4,27 @@ library(phototweetr)
 library(RSQLite)
 
 process_photos_df <- function(photo_df) {
+  # mark titles as untitled
+  photo_df[is.na(photo_df$title),]$title <- "untitled"
+  photo_df[is.na(photo_df$comment),]$comment <- ""
+
   text_preview <- paste(
-    photo_df$caption,
-    photo_df$exposre,
+    photo_df$title,
+    photo_df$comment,
+    photo_df$exposure,
     photo_df$tags
   )
-  photo_df$tweet_text_preview <- paste(substring(text_preview, 0, 25), "...")
+
+  photo_df$tweet_text_preview <- text_preview
+  photo_df[photo_df$tweeted == 1, ]$tweet_text_preview <- photo_df[photo_df$tweeted == 1, ]$tweeted_text
+  photo_df$tweet_text_preview <- paste(substring(photo_df$tweet_text_preview, 0, 25), "...")
+
   photo_df$orig_file <- gsub("orig/", "", photo_df$orig_file)
   photo_df[photo_df$tweeted == 1, ]$tweeted <- "\U002714"
   photo_df[photo_df$tweeted == 0, ]$tweeted <- ""
   photo_df$alt <- ""
   photo_df[is.na(photo_df$alt_text), ]$alt <- "\U002718"
+  photo_df[!is.na(photo_df$alt_text), ]$alt <- "\U002714"
 
   return(photo_df[,c("orig_file", "tweet_text_preview", "tweeted", "alt")])
 }
@@ -38,11 +48,24 @@ shinyServer(function(input, output, session) {
   # than the screen
   output$photo_df_full <- DT::renderDataTable(photos_full, rownames = FALSE)
 
-  output$tweet_text <- renderText(
-    paste0(
-      photos_full[input$photo_df_rows_selected, c("caption", "exposure", "tags")],
-      collapse = "<br />"
-    ))
+  text_format_func <- function(i) {
+    if (photos_full[i, "tweeted"] == 1) {
+      return(photos_full[i, "tweeted_text"])
+    } else {
+      title <- photos_full[i, "title"]
+      if (is.na(title)) title <- "untitled"
+      comment <- photos_full[i, "comment"]
+      exposure <- photos_full[i, "exposure"]
+      tags <- photos_full[i, "tags"]
+
+      # don't display any that are NA
+      contents <- c(title, comment, exposure, tags)
+      preview <- paste0(contents[!is.na(contents)], collapse = "<br />")
+      return(preview)
+    }
+  }
+
+  output$tweet_text <- renderText(text_format_func(input$photo_df_rows_selected))
   output$photo <- renderImage({
     photo_loc <- file.path(calling_dir, photos_full[input$photo_df_rows_selected, "orig_file"])
 
@@ -58,6 +81,8 @@ shinyServer(function(input, output, session) {
       alt = photos_full[input$photo_df_rows_selected, "alt_text"] %||% "no text"
     ))
   }, deleteFile = FALSE)
+  output$alt_text <- renderText(paste0("<b>Alt text:</b> ", photos_full[input$photo_df_rows_selected, "alt_text"]))
+
 
   observeEvent(input$tweet_button, {
     tweet_modal(input$photo_df_rows_selected, photos_full)

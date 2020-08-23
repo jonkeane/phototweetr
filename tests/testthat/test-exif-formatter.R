@@ -5,31 +5,33 @@ test_that("formatting", {
   expect_equal(
     grab_exif_list(exif_data),
     list(
-      caption = glue_collapse(c(
-        "Fuji from Hakone II • A photo of mount Fuji. Snow covers the top ",
+      title = "Fuji from Hakone II",
+      comment = "Film Make: Ilford\nFilm Type: Pan F+",
+      image_description = paste0(
+        "A photo of mount Fuji. Snow covers the top ",
         "1/3 of the mountain with trails visible zig-zagging up."
-      )),
+      ),
       exposure_camera = "\U0001f4f8105mm • 1/500s f/9.5 100iso\n\U0001f4f7Canon EOS 6D EF24-105mm f/4L IS USM",
       tags = glue_collapse("#Fuji-san #Hakone #Japan #MountFuji #Mountain #富士山 #日本 #箱根")
     )
   )
 })
 
-test_that("separators", {
+test_that("comment parsing", {
   exif_data <- data.frame(
-    Title = "Title",
-    Description = "Description",
+    UserComment = "This is a caption\n-Make=fdasf\n-Model=fdas\n-ISO=50\nFilm Make: Ilford\nFilm Type: Pan F+\nLensTaggerVer:1.7.6",
     stringsAsFactors = FALSE
   )
 
   expect_equal(
-    text(exif_data),
-    "Title \u2022 Description"
+    clean_comment(exif_data),
+    "This is a caption\nFilm Make: Ilford\nFilm Type: Pan F+"
   )
 
-  exif_data$Title <- NULL
   expect_equal(
-    text(exif_data),
-    "Description"
+    clean_comment(exif_data, exclude_vers = FALSE),
+    "This is a caption\nFilm Make: Ilford\nFilm Type: Pan F+\nLensTaggerVer:1.7.6"
   )
+
+  expect_null(clean_comment(data.frame()))
 })

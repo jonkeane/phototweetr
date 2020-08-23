@@ -19,6 +19,8 @@ navbarPage(
       column(
         6, hr(),
         htmlOutput('tweet_text'),
+        br(),
+        htmlOutput('alt_text'),
         imageOutput('photo', height = "285px", width = "500px"),
         actionButton("tweet_button", "tweet immediately", width = "500px"),
         br(),
