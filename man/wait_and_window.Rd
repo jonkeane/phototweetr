@@ -4,14 +4,20 @@
 \alias{wait_and_window}
 \title{Wait and window}
 \usage{
-wait_and_window(then, now = Sys.time(), wait = one_week, window = c(8, 22))
+wait_and_window(
+  then,
+  now = Sys.time(),
+  wait = as.numeric(Sys.getenv("PHOTOTWEETR_WAIT", one_week)),
+  window = c(8, 22)
+)
 }
 \arguments{
 \item{then}{a previous time (\code{POSIXct})}
 
 \item{now}{the current time (default: \code{Sys.time()})}
 
-\item{wait}{the seconds to wait between \code{then} and \code{now}}
+\item{wait}{the seconds to wait between \code{then} and \code{now} (default: \code{PHOTOTWEETR_WAIT}
+environment variable or one week if unset)}
 
 \item{window}{hours between which to return \code{TRUE}}
 }

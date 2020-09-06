@@ -7,14 +7,15 @@
 #'
 #' @param then a previous time (`POSIXct`)
 #' @param now the current time (default: `Sys.time()`)
-#' @param wait the seconds to wait between `then` and `now`
+#' @param wait the seconds to wait between `then` and `now` (default: `PHOTOTWEETR_WAIT`
+#' environment variable or one week if unset)
 #' @param window hours between which to return `TRUE`
 #'
 #' @return logical
 #' @export
 wait_and_window <- function(then,
                             now = Sys.time(),
-                            wait = one_week,
+                            wait = as.numeric(Sys.getenv("PHOTOTWEETR_WAIT", one_week)),
                             window = c(8, 22)) {
   if (now < then + wait) {
     return(FALSE)
