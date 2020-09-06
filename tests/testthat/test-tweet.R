@@ -80,6 +80,7 @@ test_that("tweet_splitter", {
 })
 
 test_that("tweet_collapse()", {
+  skip_if(Sys.info()['sysname'] == "Windows", "Unicode on windows \U1F643")
   tweet_text <- list(
     c(
       title = "A title",
