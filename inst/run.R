@@ -1,6 +1,3 @@
-library("phototweetr")
-library("glue")
-
 # Must have setup:
 # Dirs:
 #   * orig - originals (i.e. where lightroom publishes to)
@@ -12,7 +9,14 @@ message(glue(
   "Starting phototweeter at {Sys.time()}",
   "######################################################",
   .sep = "\n"
-  ))
+))
+
+message("Installing the freshest phototweeter on main")
+remotes::install_github("jonkeane/phototweetr")
+
+message("Loading packages and the DB")
+library("phototweetr")
+library("glue")
 
 ### connect to the things
 con <- connect("phototweetr.sql")
