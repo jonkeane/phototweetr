@@ -140,7 +140,10 @@ chunker <- function(chunks) {
 #' @return the text flattened with new lines
 #' @export
 tweet_collapse <- function(text) {
-  return(glue::glue_collapse(unlist(text), sep = "\n"))
+  text <- unlist(text)
+  text <- Filter(Negate(is.na), text)
+
+  return(glue::glue_collapse(text, sep = "\n"))
 }
 
 check_length <- function(input, max = twitter_max) {

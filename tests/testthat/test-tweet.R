@@ -78,3 +78,25 @@ test_that("tweet_splitter", {
     )
   )
 })
+
+test_that("tweet_collapse()", {
+  skip_if(Sys.info()['sysname'] == "Windows", "Unicode on windows \U1F643")
+  tweet_text <- list(
+    c(
+      title = "A title",
+      comment = "comment",
+      tags ="#tag #hash",
+      exposure = "📸50mm • 1/45s f/4 800iso\n📷Canon EOS 6D EF24-105mm f/4L IS USM"
+    )
+  )
+  expect_identical(
+    tweet_collapse(tweet_text),
+    glue::as_glue("A title\ncomment\n#tag #hash\n\U0001f4f850mm • 1/45s f/4 800iso\n\U0001f4f7Canon EOS 6D EF24-105mm f/4L IS USM")
+  )
+
+  tweet_text[[1]]["comment"] <- NA
+  expect_identical(
+    tweet_collapse(tweet_text),
+    glue::as_glue("A title\n#tag #hash\n\U0001f4f850mm • 1/45s f/4 800iso\n\U0001f4f7Canon EOS 6D EF24-105mm f/4L IS USM")
+  )
+})
