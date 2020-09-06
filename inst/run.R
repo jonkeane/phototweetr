@@ -3,7 +3,7 @@
 #   * orig - originals (i.e. where lightroom publishes to)
 #   * processed - photos that have had their metadata cleaned for twitter
 
-message(glue(
+message(glue::glue(
   "",
   "######################################################",
   "Starting phototweeter at {Sys.time()}",
@@ -16,7 +16,6 @@ remotes::install_github("jonkeane/phototweetr")
 
 message("Loading packages and the DB")
 library("phototweetr")
-library("glue")
 
 ### connect to the things
 con <- connect("phototweetr.sql")
@@ -54,12 +53,12 @@ if (nrow(to_tweet) == 0) {
 }
 
 photo_to_tweet <- to_tweet[sample(nrow(to_tweet),1),]
-message(glue("Found one: {photo_to_tweet$orig_file}"))
+message(glue::glue("Found one: {photo_to_tweet$orig_file}"))
 
 message("Authenticating with Twitter")
 token <- auth_rtweet(set_renv = FALSE)
 
-message(glue("Tweeting out photo {photo_to_tweet$orig_file}"))
+message(glue::glue("Tweeting out photo {photo_to_tweet$orig_file}"))
 photo_to_tweet <- tweet_photo(photo_to_tweet, token = token)
 update_one(photo_to_tweet, con)
 
