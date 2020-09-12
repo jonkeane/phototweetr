@@ -8,7 +8,8 @@ wait_and_window(
   then,
   now = Sys.time(),
   wait = as.numeric(Sys.getenv("PHOTOTWEETR_WAIT", one_week)),
-  window = c(8, 22)
+  window = c(8, 22),
+  verbose = TRUE
 )
 }
 \arguments{
@@ -20,6 +21,8 @@ wait_and_window(
 environment variable or one week if unset)}
 
 \item{window}{hours between which to return \code{TRUE}}
+
+\item{verbose}{should the wait/window \code{message} why? (default: \code{TRUE})}
 }
 \value{
 logical

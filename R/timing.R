@@ -10,19 +10,23 @@
 #' @param wait the seconds to wait between `then` and `now` (default: `PHOTOTWEETR_WAIT`
 #' environment variable or one week if unset)
 #' @param window hours between which to return `TRUE`
+#' @param verbose should the wait/window `message` why? (default: `TRUE`)
 #'
 #' @return logical
 #' @export
 wait_and_window <- function(then,
                             now = Sys.time(),
                             wait = as.numeric(Sys.getenv("PHOTOTWEETR_WAIT", one_week)),
-                            window = c(8, 22)) {
+                            window = c(8, 22),
+                            verbose = TRUE) {
   if (now < then + wait) {
+    if (verbose) message("Waiting until at least: ", then + wait)
     return(FALSE)
   }
 
   hour <- as.numeric(format(then, "%H"))
   if (!is.null(window) && {hour < window[[1]] | hour > window[[2]]}) {
+    if (verbose) message("It is not during the window from ", window[[1]], " to ", window[[2]])
     return(FALSE)
   }
 
