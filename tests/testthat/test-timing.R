@@ -4,12 +4,12 @@ test_that("timing works", {
   # if then is in the future as improbable as it is, false
   expect_message(
     expect_false(wait_and_window(as.POSIXct("2019-04-01 10:00:00"), now)),
-    "Waiting until at least: 2019-04-08 10:00:00"
+    "Waiting until at least: 2019-04-08 "
   )
   # if then is less than wait, false
   expect_message(
     expect_false(wait_and_window(as.POSIXct("2019-03-09 10:00:00"), now)),
-    "Waiting until at least: 2019-03-16 11:00:00"
+    "Waiting until at least: 2019-03-16 "
   )
   # if then is more than wait, true
   expect_true(wait_and_window(as.POSIXct("2019-03-02 10:00:00"), now))
