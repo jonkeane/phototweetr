@@ -24,7 +24,7 @@ wait_and_window <- function(then,
     return(FALSE)
   }
 
-  hour <- as.numeric(format(then, "%H"))
+  hour <- as.numeric(format(now, "%H"))
   if (!is.null(window) && {hour < window[[1]] | hour > window[[2]]}) {
     if (verbose) message("It is not during the window from ", window[[1]], " to ", window[[2]])
     return(FALSE)
