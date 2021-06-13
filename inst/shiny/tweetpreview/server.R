@@ -129,7 +129,7 @@ tweet_immediately <- function(id, photo_df) {
   }
 
   message("Authenticating with Twitter")
-  token <- auth_rtweet(set_renv = FALSE)
+  token <- auth_rtweet()
 
   message(glue::glue("Tweeting out photo {photo_to_tweet$orig_file}"))
   if (tolower(Sys.getenv("phototweetrtweet", "")) == "true") {
