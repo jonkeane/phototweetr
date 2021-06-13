@@ -64,14 +64,12 @@ tweet_photo <- function(photo_df, path = NULL, ...) {
 #' @param ... arguments passed to `rtweet::create_token()`
 #'
 #' @export
-auth_rtweet <- function(...) {
-  return(rtweet::create_token(
-    app = "phototweetr-meta",
-    consumer_key = Sys.getenv("rtweet_api_key"),
-    consumer_secret = Sys.getenv("rtweet_api_secret_key"),
+auth_rtweet <- function() {
+  return(rtweet::rtweet_bot(
+    api_key = Sys.getenv("rtweet_api_key"),
+    api_secret = Sys.getenv("rtweet_api_secret_key"),
     access_token = Sys.getenv("rtweet_access_token"),
-    access_secret = Sys.getenv("rtweet_access_token_secret"),
-    ...
+    access_secret = Sys.getenv("rtweet_access_token_secret")
   ))
 }
 

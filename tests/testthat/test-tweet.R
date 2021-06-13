@@ -1,7 +1,7 @@
 test_that("tweet_photo works", {
   skip_if(Sys.info()['sysname'] == "Windows", "Windows and rtweet testing aren't friends")
   with_mock_api({
-    token <- auth_rtweet(set_renv = FALSE)
+    token <- auth_rtweet()
 
     photo_df <- data.frame(
       orig_file = test_path("orig", "IMG_4907.jpg"),
