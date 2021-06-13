@@ -33,4 +33,4 @@ Suggests:
 RoxygenNote: 7.1.1
 Language: en-US
 Remotes: 
-    jonkeane/rtweet@alt-text
+    ropensci/rtweet
