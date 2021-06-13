@@ -61,8 +61,6 @@ tweet_photo <- function(photo_df, path = NULL, ...) {
 #' * `rtweet_access_token`
 #' * `rtweet_access_token_secret`
 #'
-#' @param ... arguments passed to `rtweet::create_token()`
-#'
 #' @export
 auth_rtweet <- function() {
   return(rtweet::rtweet_bot(

@@ -6,9 +6,6 @@
 \usage{
 auth_rtweet()
 }
-\arguments{
-\item{...}{arguments passed to \code{rtweet::create_token()}}
-}
 \description{
 This will call \code{rtweet::create_token()}. If a token is being created, the
 following environment variables are used/needed:
