@@ -11,6 +11,10 @@ message(glue::glue(
   .sep = "\n"
 ))
 
+# this shouldn't be necesary, but ensure that the seed is unset (in case it
+# happens to be set for the user)
+set.seed(NULL)
+
 message("Installing the freshest phototweeter on main")
 remotes::install_github("jonkeane/phototweetr")
 
