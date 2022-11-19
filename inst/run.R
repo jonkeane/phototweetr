@@ -17,8 +17,6 @@ set.seed(NULL)
 
 message("Installing the freshest phototweeter on main")
 remotes::install_github("jonkeane/phototweetr")
-# For now, need the newest
-remotes::install_github("schochastics/rtoot")
 
 message("Loading packages and the DB")
 library("phototweetr")
