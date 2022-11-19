@@ -36,7 +36,7 @@ rtoot::verify_envvar()
 ### determine if it's time to toot
 last_tooted <- DBI::dbGetQuery(con, "SELECT date_tweeted FROM tweets;")
 
-if (nrow(last_tooted) < 1 || all(is.na(last_tooted$date_tweeted))) {
+if (nrow(last_tooted) < 1 || !all(is.na(last_tooted$date_tweeted))) {
   message("There are no toots, please toot manually. Goodbye.")
   quit("no")
 }
