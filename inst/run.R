@@ -30,42 +30,39 @@ message("Queuing any updated photos")
 triage_photos <- file.path("orig", list.files("orig", pattern = "(jpg|png|jpeg)$"))
 db_response <- queue(triage_photos, con = con)
 
-### determine if it's time to tweet
-last_tweeted <- DBI::dbGetQuery(con, "SELECT date_tweeted FROM tweets;")
+### determine if it's time to toot
+last_tooted <- DBI::dbGetQuery(con, "SELECT date_tweeted FROM tweets;")
 
-if (nrow(last_tweeted) < 1 || all(is.na(last_tweeted$date_tweeted))) {
-  message("There are no tweets, please tweet manually. Goodbye.")
+if (nrow(last_tooted) < 1 || all(is.na(last_tooted$date_tooted))) {
+  message("There are no toots, please toot manually. Goodbye.")
   quit("no")
 }
 
-last_tweeted <- max(as.POSIXct(last_tweeted$date_tweeted), na.rm = TRUE)
+last_tooted <- max(as.POSIXct(last_tooted$date_tooted), na.rm = TRUE)
 
-if (!wait_and_window(last_tweeted)) {
-  message("It's not yet time to tweet again. Goodbye.")
+if (!wait_and_window(last_tooted)) {
+  message("It's not yet time to toot again. Goodbye.")
   quit("no")
 } else if (!weighted_coin()) {
   message("The weighted coin says this hour is not our hour. Goodbye.")
   quit("no")
 }
 
-### pick a photo and tweet
-message("Finding a photo to tweet")
-to_tweet <- DBI::dbGetQuery(con, "SELECT rowid, * FROM tweets WHERE tweeted == 0;")
-if (nrow(to_tweet) == 0) {
-  message("There are no more tweets queued. Goodbye.")
+### pick a photo and toot
+message("Finding a photo to toot")
+to_toot <- DBI::dbGetQuery(con, "SELECT rowid, * FROM tweets WHERE tweeted == 0;")
+if (nrow(to_toot) == 0) {
+  message("There are no more toots queued. Goodbye.")
   quit("no")
 }
 
-photo_to_tweet <- to_tweet[sample(nrow(to_tweet),1),]
-message(glue::glue("Found one: {photo_to_tweet$orig_file}"))
+photo_to_toot <- to_toot[sample(nrow(to_toot),1),]
+message(glue::glue("Found one: {photo_to_toot$orig_file}"))
 
-message("Authenticating with Twitter")
-token <- auth_rtweet()
-
-message(glue::glue("Tweeting out photo {photo_to_tweet$orig_file}"))
-photo_to_tweet <- tweet_photo(photo_to_tweet, token = token)
-update_one(photo_to_tweet, con)
+message(glue::glue("Tooting out photo {photo_to_toot$orig_file}"))
+photo_to_toot <- toot_photo(photo_to_toot)
+update_one(photo_to_toot, con)
 
 ### goodbye
-message("A photo has been tweeted and updated. Goodbye.")
+message("A photo has been tooted and updated. Goodbye.")
 quit("no")

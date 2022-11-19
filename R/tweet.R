@@ -105,30 +105,6 @@ tweet_splitter <- function(text) {
   return(chunks)
 }
 
-chunker <- function(chunks) {
-  chunks <- unlist(strsplit(chunks, " "))
-  chunk_lengths <- vapply(chunks, utf8::utf8_width, integer(1)) + 1
-  start <- 1
-  chunked_chunks <- list()
-  for (i in seq_along(chunk_lengths)) {
-    end <- i
-    if (sum(chunk_lengths[start:end], chunk_lengths[end+1], na.rm = TRUE) > twitter_max) {
-
-      chunked_chunks[length(chunked_chunks) + 1] <- list(chunks[start:end])
-      start <- end + 1
-    }
-
-    # clean up at the end
-    if (end == length(chunk_lengths)) {
-      chunked_chunks[length(chunked_chunks) + 1] <- list(chunks[start:end])
-    }
-  }
-
-  chunks <- unlist(lapply(chunked_chunks, paste, collapse = " "))
-
-  return(chunks)
-}
-
 #' Collapse tweet text
 #'
 #' @param text text to flatten
