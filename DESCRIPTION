@@ -31,7 +31,7 @@ Suggests:
     covr,
     spelling,
     shiny
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Language: en-US
 Remotes: 
     ropensci/rtweet

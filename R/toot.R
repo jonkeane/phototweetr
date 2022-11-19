@@ -17,12 +17,6 @@ toot_photo <- function(photo_df, path = NULL, ...) {
 
   toot_info <- unlist(photo_df[,c("title", "comment", "tags", "exposure")])
 
-  #fake
-  image_path <- paste0("inst/", image_path)
-
-  toot_info["title"] <- paste(toot_info["title"], toot_info["title"], toot_info["title"], toot_info["title"], toot_info["title"], toot_info["title"])
-  toot_info["tags"] <- paste(toot_info["tags"], toot_info["tags"], toot_info["tags"], toot_info["tags"], toot_info["tags"])
-
   toot_text <- toot_splitter(toot_info)
   toot_text <- toot_text[!is.na(toot_text)]
   image_alt <- photo_df$alt_text
@@ -56,18 +50,6 @@ toot_photo <- function(photo_df, path = NULL, ...) {
   }
 
   return(photo_df)
-}
-
-#' Ensure that `rtoot` is authenticated
-#'
-#' @export
-auth_rtoot <- function() {
-  return(rtweet::rtweet_bot(
-    api_key = Sys.getenv("rtweet_api_key"),
-    api_secret = Sys.getenv("rtweet_api_secret_key"),
-    access_token = Sys.getenv("rtweet_access_token"),
-    access_secret = Sys.getenv("rtweet_access_token_secret")
-  ))
 }
 
 mastodon_max <- 500
@@ -124,4 +106,3 @@ check_length <- function(input, max = mastodon_max) {
 
   return(n_char <= mastodon_max)
 }
-

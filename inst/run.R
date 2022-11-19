@@ -17,6 +17,8 @@ set.seed(NULL)
 
 message("Installing the freshest phototweeter on main")
 remotes::install_github("jonkeane/phototweetr")
+# For now, need the newest
+remotes::install_github("schochastics/rtoot")
 
 message("Loading packages and the DB")
 library("phototweetr")
@@ -30,15 +32,18 @@ message("Queuing any updated photos")
 triage_photos <- file.path("orig", list.files("orig", pattern = "(jpg|png|jpeg)$"))
 db_response <- queue(triage_photos, con = con)
 
+### verify authentication
+rtoot::verify_envvar()
+
 ### determine if it's time to toot
 last_tooted <- DBI::dbGetQuery(con, "SELECT date_tweeted FROM tweets;")
 
-if (nrow(last_tooted) < 1 || all(is.na(last_tooted$date_tooted))) {
+if (nrow(last_tooted) < 1 || all(is.na(last_tooted$date_tweeted))) {
   message("There are no toots, please toot manually. Goodbye.")
   quit("no")
 }
 
-last_tooted <- max(as.POSIXct(last_tooted$date_tooted), na.rm = TRUE)
+last_tooted <- max(as.POSIXct(last_tooted$date_tweeted), na.rm = TRUE)
 
 if (!wait_and_window(last_tooted)) {
   message("It's not yet time to toot again. Goodbye.")
