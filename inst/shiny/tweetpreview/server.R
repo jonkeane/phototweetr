@@ -5,8 +5,8 @@ library(RSQLite)
 
 process_photos_df <- function(photo_df) {
   # mark titles as untitled
-  photo_df[is.na(photo_df$title),]$title <- "untitled"
-  photo_df[is.na(photo_df$comment),]$comment <- ""
+  photo_df[is.na(photo_df$title),"title"] <- "untitled"
+  photo_df[is.na(photo_df$comment),"comment"] <- ""
 
   text_preview <- paste(
     photo_df$title,
@@ -20,11 +20,11 @@ process_photos_df <- function(photo_df) {
   photo_df$tweet_text_preview <- paste(substring(photo_df$tweet_text_preview, 0, 25), "...")
 
   photo_df$orig_file <- gsub("orig/", "", photo_df$orig_file)
-  photo_df[photo_df$tweeted == 1, ]$tweeted <- "\U002714"
-  photo_df[photo_df$tweeted == 0, ]$tweeted <- ""
+  photo_df[photo_df$tweeted == 1, "tweeted"] <- "\U002714"
+  photo_df[photo_df$tweeted == 0, "tweeted"] <- ""
   photo_df$alt <- ""
-  photo_df[is.na(photo_df$alt_text), ]$alt <- "\U002718"
-  photo_df[!is.na(photo_df$alt_text), ]$alt <- "\U002714"
+  photo_df[is.na(photo_df$alt_text), "alt"] <- "\U002718"
+  photo_df[!is.na(photo_df$alt_text), "alt"] <- "\U002714"
 
   return(photo_df[,c("orig_file", "tweet_text_preview", "tweeted", "alt")])
 }
